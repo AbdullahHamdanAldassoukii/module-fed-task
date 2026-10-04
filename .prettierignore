@@ -1,0 +1,15 @@
+dist
+node_modules
+pnpm-lock.yaml
+**/mockServiceWorker.js
+coverage
+playwright-report
+test-results
+
+# Hidden root folders hold local tool state; .github is the one that belongs to the repo.
+/.*/
+!/.github/
+
+# Only the ADRs under docs/ belong to the repo.
+/docs/*/
+!/docs/adr/

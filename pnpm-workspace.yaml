@@ -1,0 +1,87 @@
+packages:
+  - apps/*
+  - packages/*
+  - e2e
+
+catalog:
+  # runtime
+  react: 18.3.1
+  react-dom: 18.3.1
+  '@types/react': ^18.3.0
+  '@types/react-dom': ^18.3.0
+  react-router: ^7.18.4
+  '@tanstack/react-query': ^5.104.1
+  react-hook-form: ^7.89.0
+  '@hookform/resolvers': ^5.9.1
+  zod: ^4.6.5
+  i18next: ^26.4.2
+  react-i18next: ^17.0.15
+  axios: ~1.20.0
+  react-error-boundary: ^6.1.6
+  # module federation
+  '@module-federation/rsbuild-plugin': ~2.9.2
+  '@module-federation/enhanced': ~2.9.2
+  '@module-federation/retry-plugin': ~2.9.2
+  # ui — shadcn kit
+  radix-ui: ~1.6.7
+  cn: ^0.4.0
+  class-variance-authority: ^0.7.1
+  lucide-react: ^1.51.0
+  tw-animate-css: ^1.4.0
+  react-day-picker: ^10.0.2
+  date-fns: ^4.4.0
+  react-dropzone: ^20.1.2
+  sonner: ^2.0.8
+  tailwindcss: ~4.3.3
+  '@tailwindcss/postcss': ~4.3.3
+  postcss: ^8.5.0
+  postcss-prefix-selector: ^2.2.1
+  # ui — mui kit
+  '@mui/material': ~9.4.0
+  '@mui/x-date-pickers': ~9.14.0
+  '@mui/stylis-plugin-rtl': ^9.4.0
+  '@emotion/react': ^11.14.0
+  '@emotion/styled': ^11.14.1
+  '@emotion/cache': ^11.14.0
+  stylis: ^4.4.0
+  dayjs: ^1.11.23
+  notistack: ^3.0.2
+  # build
+  '@rsbuild/core': ~2.2.11
+  '@rsbuild/plugin-react': ^2.1.1
+  '@rsdoctor/rspack-plugin': ^1.6.4
+  typescript: ~5.9.0
+  # test
+  '@rstest/core': ~0.12.3
+  '@rstest/adapter-rsbuild': ~0.12.3
+  happy-dom: ^20.14.5
+  '@testing-library/react': ^16.3.3
+  '@testing-library/jest-dom': ^7.0.1
+  '@testing-library/user-event': ^14.6.7
+  msw: ~2.15.0
+  '@mswjs/http-middleware': ^0.10.3
+  express: ^5.2.1
+  '@types/express': ^5.0.0
+  '@playwright/test': ~1.63.0
+  '@axe-core/playwright': ~4.13.0
+  # lint/format
+  eslint: ^9.0.0
+  typescript-eslint: ^8.71.0
+  eslint-plugin-react: ^7.37.5
+  eslint-plugin-react-hooks: ^7.1.1
+  eslint-plugin-jsx-a11y: ^6.10.2
+  eslint-plugin-import-x: ^4.17.1
+  eslint-plugin-boundaries: ^7.2.0
+  eslint-import-resolver-typescript: ^4.4.5
+  eslint-config-prettier: ^10.1.8
+  globals: ^17.13.0
+  prettier: ^3.9.9
+  prettier-plugin-tailwindcss: ^0.8.1
+  # repo tooling
+  turbo: ^2.11.7
+  husky: ^9.1.7
+  lint-staged: ^17.6.0
+  '@commitlint/cli': ^21.2.3
+  '@commitlint/config-conventional': ^21.0.0
+  '@types/node': ^22.0.0
+  tsx: ^4.23.15

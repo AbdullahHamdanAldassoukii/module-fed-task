@@ -4,11 +4,14 @@ node_modules/
 # build output
 dist/
 .turbo/
+*.tsbuildinfo
+.rsdoctor/
 
 # test output
 coverage/
 playwright-report/
 test-results/
+.rstest/
 
 # env / local
 .env

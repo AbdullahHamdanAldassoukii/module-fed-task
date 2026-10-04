@@ -1,0 +1,35 @@
+{
+  "name": "passport-wizard-monorepo",
+  "private": true,
+  "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=22.22.1"
+  },
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "dev:mui": "UI_KIT=mui turbo run dev --parallel",
+    "build": "turbo run build",
+    "build:mui": "UI_KIT=mui turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:mui": "UI_KIT=mui turbo run test",
+    "e2e": "pnpm --filter e2e e2e",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "mock-api": "pnpm --filter @repo/api-mocks serve",
+    "docker:qa": "APP_ENV=qa docker compose -f infra/docker-compose.yml up --build",
+    "docker:prod": "APP_ENV=production docker compose -f infra/docker-compose.yml up --build",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "turbo": "catalog:",
+    "prettier": "catalog:",
+    "prettier-plugin-tailwindcss": "catalog:",
+    "husky": "catalog:",
+    "lint-staged": "catalog:",
+    "@commitlint/cli": "catalog:",
+    "@commitlint/config-conventional": "catalog:",
+    "typescript": "catalog:"
+  }
+}
