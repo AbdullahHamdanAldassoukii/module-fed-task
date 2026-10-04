@@ -6,13 +6,16 @@ async function boxOf(locator: Locator) {
   return box;
 }
 
-// `first` comes before `second` in reading order: to its left in LTR, to its right in RTL.
 async function expectReadingOrder(first: Locator, second: Locator, direction: 'ltr' | 'rtl') {
   const [a, b] = [await boxOf(first), await boxOf(second)];
-  // On narrow screens the pair may stack; then reading order is top to bottom in both directions.
   if (b.y >= a.y + a.height) return;
   if (direction === 'ltr') expect(a.x + a.width).toBeLessThanOrEqual(b.x);
   else expect(a.x).toBeGreaterThanOrEqual(b.x + b.width);
+}
+
+async function expectBelow(upper: Locator, lower: Locator) {
+  const [a, b] = [await boxOf(upper), await boxOf(lower)];
+  expect(b.y).toBeGreaterThanOrEqual(a.y + a.height);
 }
 
 test('switching to Arabic turns the host and the remote right-to-left and persists', async ({
@@ -25,11 +28,9 @@ test('switching to Arabic turns the host and the remote right-to-left and persis
   await expect(html).toHaveAttribute('dir', 'ltr');
   const steps = page.getByRole('navigation', { name: 'Progress' }).getByRole('listitem');
   await expectReadingOrder(steps.first(), steps.last(), 'ltr');
-  await expectReadingOrder(
-    page.getByText('Complete all fields to continue'),
-    page.getByRole('button', { name: 'Next' }),
-    'ltr',
-  );
+  const next = page.getByRole('button', { name: 'Next' });
+  await expectReadingOrder(page.getByRole('heading', { level: 1 }), next, 'ltr');
+  await expectBelow(next, page.getByText('Complete all fields to continue'));
 
   await page.getByRole('button', { name: 'Language' }).click();
   await page.getByRole('menuitemradio', { name: 'العربية' }).click();
@@ -46,11 +47,9 @@ test('switching to Arabic turns the host and the remote right-to-left and persis
   await expect(page.getByRole('button', { name: 'اللغة' })).toBeVisible();
   const arabicSteps = page.getByRole('navigation', { name: 'التقدم' }).getByRole('listitem');
   await expectReadingOrder(arabicSteps.first(), arabicSteps.last(), 'rtl');
-  await expectReadingOrder(
-    page.getByText('أكمل جميع الحقول للمتابعة'),
-    page.getByRole('button', { name: 'التالي' }),
-    'rtl',
-  );
+  const arabicNext = page.getByRole('button', { name: 'التالي' });
+  await expectReadingOrder(page.getByRole('heading', { level: 1 }), arabicNext, 'rtl');
+  await expectBelow(arabicNext, page.getByText('أكمل جميع الحقول للمتابعة'));
   await testInfo.attach('passport-step-ar', {
     body: await page.screenshot({ fullPage: true }),
     contentType: 'image/png',

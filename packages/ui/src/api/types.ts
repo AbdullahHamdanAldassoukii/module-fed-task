@@ -7,7 +7,6 @@ export interface UiProviderProps {
   locale: string;
   direction: Direction;
   colorScheme: ColorScheme;
-  /** An instance id. The MUI kit uses it as the Emotion cache key prefix; the shadcn kit ignores it. */
   scope?: string;
   children: ReactNode;
 }
@@ -17,8 +16,9 @@ export interface ButtonProps {
   variant?: 'primary' | 'secondary' | 'ghost' | 'destructive';
   size?: 'sm' | 'md' | 'lg';
   type?: 'button' | 'submit';
+  /** The id of the form this button submits, when it sits outside that form. */
+  form?: string;
   disabled?: boolean;
-  /** Shows a spinner, sets aria-busy, and disables the button. */
   loading?: boolean;
   onClick?: () => void;
   id?: string;
@@ -32,7 +32,6 @@ export interface FieldBaseProps {
   id: string;
   label: string;
   description?: string;
-  /** Translated error text. Presence marks the field invalid. */
   error?: string;
   required?: boolean;
   disabled?: boolean;
@@ -62,36 +61,25 @@ export interface SelectFieldProps extends FieldBaseProps {
   options: SelectOption[];
   placeholder: string;
   name?: string;
-  /** The focusable control (the kits render different elements), e.g. for focus-on-error. */
   inputRef?: Ref<HTMLElement>;
 }
 
-/** What an empty date field shows in place of each part, in the page's language (e.g. YYYY, MM, DD). */
 export interface DatePlaceholder {
   year: string;
   month: string;
   day: string;
 }
 
-/**
- * value is '' | 'YYYY-MM-DD' | any other non-empty text (= invalid, the form decides).
- * Both kits emit exactly these shapes.
- */
 export interface DateFieldProps extends FieldBaseProps {
   value: string;
   onChange: (value: string) => void;
   onBlur?: () => void;
   locale: string;
-  /** YYYY-MM-DD; dates before are disabled in the calendar. */
   min?: string;
-  /** YYYY-MM-DD; dates after are disabled in the calendar. */
   max?: string;
   name?: string;
-  /** aria-label of the button that opens the calendar. */
   openCalendarLabel: string;
-  /** Shown while the field is empty, parts in year-month-day order. */
   placeholder: DatePlaceholder;
-  /** The focusable control (the kits render different elements), e.g. for focus-on-error. */
   inputRef?: Ref<HTMLElement>;
 }
 
@@ -107,30 +95,17 @@ export interface FileFieldLabels {
   drop: string;
   replace: string;
   remove: string;
-  /**
-   * Read after Choose file and Replace when the field is required: a button cannot carry
-   * aria-required, and the keyboard reaches the buttons, not the file input.
-   */
   required: string;
 }
 
 export interface FileFieldProps extends FieldBaseProps {
-  /** MIME types for the picker hint; the form validates the real file. */
   accept: readonly string[];
-  /** Called with every file the user offered, accepted or not; the form validates count and type. */
   onFilesSelected: (files: File[]) => void;
-  /** The currently chosen file (restored or fresh). */
   file?: FileFieldFile | null;
   onRemove?: () => void;
-  /** Called when focus leaves the field (not when the file picker takes the window). */
   onBlur?: () => void;
-  /** The focusable control: Choose file, or Replace once a file is shown. */
   inputRef?: Ref<HTMLElement>;
   labels: FileFieldLabels;
-  /**
-   * When set, shows an indeterminate progress with this label. The field stays usable: a new
-   * file replaces the one being read.
-   */
   busyLabel?: string | null;
 }
 
@@ -138,10 +113,6 @@ export type StepStatus = 'complete' | 'current' | 'upcoming';
 export interface StepperProps {
   ariaLabel: string;
   steps: { id: string; label: string; status: StepStatus }[];
-  /**
-   * Status words read after each step label (visually hidden, e.g. "Passport (complete)").
-   * Pass translated words; the English default only suits English pages.
-   */
   statusLabels?: Record<StepStatus, string>;
 }
 
@@ -150,7 +121,6 @@ export interface AlertProps {
   title?: string;
   children: ReactNode;
   actions?: ReactNode;
-  /** 'alert' interrupts; 'status' is polite. Default: 'alert' for error, 'status' otherwise. */
   role?: 'alert' | 'status';
   className?: string;
 }
@@ -186,7 +156,6 @@ export interface SkeletonProps {
   label?: string;
 }
 export interface ProgressProps {
-  /** 0–100; omit for indeterminate */
   value?: number;
   label: string;
   className?: string;
@@ -217,6 +186,5 @@ export interface UiKit {
   Toaster: ComponentType<Record<string, never>>;
   toast: ToastFn;
   UiProvider: ComponentType<UiProviderProps>;
-  /** Global reset. Rendered once by the host (and the remote's standalone page), never by the exposed remote. */
   UiGlobalStyles: ComponentType<Record<string, never>>;
 }

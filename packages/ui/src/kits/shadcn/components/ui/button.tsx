@@ -8,15 +8,14 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary/80',
+        default:
+          'bg-primary text-primary-foreground hover:bg-[color-mix(in_oklch,var(--primary),var(--foreground)_10%)]',
         outline:
           'border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50',
         secondary:
           'bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground',
         ghost:
           'hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50',
-        // Solid, like the MUI kit's error button: the soft red-on-tint style is below 4.5:1 in
-        // light mode. Hover mixes toward the foreground, so contrast rises in both schemes.
         destructive:
           'bg-destructive text-destructive-foreground hover:bg-[color-mix(in_oklch,var(--destructive),var(--foreground)_10%)] focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40',
         link: 'text-primary underline-offset-4 hover:underline',
@@ -47,8 +46,6 @@ type ButtonProps = React.ComponentPropsWithoutRef<'button'> &
     asChild?: boolean;
   };
 
-// React 18 hands `ref` to function components only through forwardRef; Radix `asChild`
-// triggers and the calendar's day focus need the real button element.
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function Button(
   { className, variant = 'default', size = 'default', asChild = false, type = 'button', ...props },
   ref,

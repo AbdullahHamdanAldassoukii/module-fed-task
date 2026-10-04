@@ -6,6 +6,7 @@ import { ValidationError } from '../../../lib/errors';
 import { M, useT } from '../../../lib/i18n';
 import { IdInfoForm } from '../components/IdInfoForm';
 import { SubmissionErrorAlert } from '../components/SubmissionErrorAlert';
+import { WizardActions } from '../components/WizardActions';
 import { useIdInfoForm } from '../hooks/useIdInfoForm';
 import { useOnboardingWizard } from '../hooks/useOnboardingWizard';
 import { useSubmitApplication } from '../hooks/useSubmitApplication';
@@ -18,6 +19,7 @@ import {
   type IdInfoDraft,
 } from '../model';
 
+const FORM_ID = 'id-info-form';
 const SUBMIT_HINT_ID = 'submit-hint';
 const [passportStep] = onboardingSteps;
 
@@ -49,7 +51,6 @@ export function IdInfoStep() {
   const failure = submission.status === 'failed' ? submission : null;
   const failedError = failure?.error ?? null;
 
-  // A rejected ID field takes focus; any other failure focuses the alert and its actions.
   useEffect(() => {
     if (!failedError) return;
     if (
@@ -71,12 +72,27 @@ export function IdInfoStep() {
     <form
       aria-busy={isSubmitting}
       className="wizard-section"
+      id={FORM_ID}
       noValidate
       onSubmit={(event) => {
         event.preventDefault();
         submit();
       }}
     >
+      <WizardActions hint={showHint ? t(M.wizard.submitHint) : null} hintId={SUBMIT_HINT_ID}>
+        <Button disabled={isSubmitting} variant="secondary" onClick={goBack}>
+          {t(M.wizard.back)}
+        </Button>
+        <Button
+          aria-describedby={showHint ? SUBMIT_HINT_ID : undefined}
+          disabled={!canSubmit}
+          form={FORM_ID}
+          loading={isSubmitting}
+          type="submit"
+        >
+          {t(isSubmitting ? M.wizard.submitting : M.wizard.submit)}
+        </Button>
+      </WizardActions>
       <section aria-labelledby="id-info-title" className="wizard-card">
         <header className="wizard-card-header">
           <h2 className="wizard-card-title" id="id-info-title">
@@ -100,26 +116,6 @@ export function IdInfoStep() {
         waitingForNetwork={isSubmitting && isWaitingForNetwork}
       />
 
-      <div className="wizard-actions wizard-actions-sticky">
-        <Button disabled={isSubmitting} variant="secondary" onClick={goBack}>
-          {t(M.wizard.back)}
-        </Button>
-        <div className="wizard-actions-end">
-          {showHint ? (
-            <p className="wizard-hint" id={SUBMIT_HINT_ID}>
-              {t(M.wizard.submitHint)}
-            </p>
-          ) : null}
-          <Button
-            aria-describedby={showHint ? SUBMIT_HINT_ID : undefined}
-            disabled={!canSubmit}
-            loading={isSubmitting}
-            type="submit"
-          >
-            {t(isSubmitting ? M.wizard.submitting : M.wizard.submit)}
-          </Button>
-        </div>
-      </div>
       <VisuallyHidden>
         <span role="status">{isSubmitting ? t(M.wizard.submitting) : ''}</span>
       </VisuallyHidden>

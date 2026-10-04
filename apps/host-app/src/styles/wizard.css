@@ -1,17 +1,23 @@
-/* Onboarding wizard layout. Plain CSS on the design tokens, so both UI kits render it alike. */
-
 .wizard {
   display: grid;
-  gap: 1.5rem;
+  gap: 1rem;
   margin-inline: auto;
   max-width: 720px;
-  padding: 1.5rem 1rem 3rem;
+  padding: 1rem 1rem 2rem;
 }
 
 @media (min-width: 640px) {
   .wizard {
-    padding-block-start: 2.5rem;
+    padding-block-start: 1.5rem;
   }
+}
+
+.wizard-titlebar {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  justify-content: space-between;
 }
 
 .wizard-heading {
@@ -20,17 +26,17 @@
   letter-spacing: -0.01em;
   line-height: 1.25;
   margin: 0;
+  min-width: 0;
   text-wrap: balance;
 }
 
-/* Focused by script on every page change; it is not an interactive control. */
 .wizard-heading:focus {
   outline: none;
 }
 
 .wizard-section {
   display: grid;
-  gap: 1.25rem;
+  gap: 1rem;
 }
 
 .wizard-card {
@@ -50,7 +56,6 @@
   }
 }
 
-/* Same scale as the passport form's own card, so both steps read as one form. */
 .wizard-card-header {
   display: grid;
   gap: 0.375rem;
@@ -83,64 +88,15 @@
   }
 }
 
+.wizard-titlebar-actions {
+  display: grid;
+  gap: 0.25rem;
+  justify-items: end;
+}
+
 .wizard-actions {
-  align-items: center;
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  justify-content: space-between;
-}
-
-/*
- * The step's navigation stays on screen while the form scrolls under it, so Next and Submit
- * (and the hint that explains why they are disabled) are always visible on any screen height.
- * The bar's surface reaches both edges of the viewport; the buttons stay on the content column.
- */
-.wizard-actions-sticky {
-  inset-block-end: 0;
-  isolation: isolate;
-  padding-block: 0.875rem calc(0.875rem + env(safe-area-inset-bottom, 0px));
-  position: sticky;
-  z-index: 10;
-}
-
-.wizard-actions-sticky::before {
-  background: var(--background);
-  border-block-start: 1px solid var(--border);
-  box-shadow: 0 -6px 16px -12px rgb(0 0 0 / 35%);
-  content: '';
-  inset-block: 0;
-  inset-inline: -100vmax;
-  position: absolute;
-  z-index: -1;
-}
-
-/* The bar's surface is wider than the page on purpose; clip it without creating a scroll box. */
-#main {
-  overflow-x: clip;
-}
-
-@media (max-width: 639px) {
-  .wizard-actions-sticky .wizard-actions-end {
-    flex: 1;
-  }
-
-  .wizard-actions-sticky .wizard-actions-end > button {
-    flex: 1;
-  }
-
-  .wizard-actions-sticky .wizard-hint {
-    flex-basis: 100%;
-  }
-}
-
-.wizard-actions-end {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  justify-content: flex-end;
-  margin-inline-start: auto;
+  gap: 0.5rem;
 }
 
 .wizard-hint {
@@ -148,6 +104,30 @@
   font-size: 0.8125rem;
   line-height: 1.4;
   margin: 0;
+}
+
+.wizard-titlebar-actions .wizard-hint {
+  min-block-size: 1lh;
+  text-align: end;
+}
+
+@media (max-width: 639px) {
+  .wizard-titlebar-actions {
+    flex-basis: 100%;
+    justify-items: stretch;
+  }
+
+  .wizard-actions > * {
+    flex: 1 1 0;
+  }
+
+  .wizard-actions > :last-child {
+    flex-grow: 2;
+  }
+
+  .wizard-titlebar-actions .wizard-hint {
+    text-align: start;
+  }
 }
 
 .wizard-alert {
@@ -222,7 +202,6 @@
   display: none;
 }
 
-/* A triangle that points along the reading direction and turns down when open. */
 .wizard-disclosure-summary::before {
   border-block: 0.3em solid transparent;
   border-inline-start: 0.45em solid currentColor;

@@ -10,6 +10,7 @@ import {
   expectPassportStepRestored,
   fillIdInfoStep,
   fillPassportStep,
+  idNumberField,
   isApplicationPost,
   seedStepTwoDraft,
   type Locale,
@@ -46,7 +47,6 @@ test('the example application goes through both steps and is submitted in the ex
     passport: Record<string, unknown> & { document: Record<string, unknown> };
     idInfo: Record<string, unknown>;
   };
-  // Key order is part of the shape: it is the assessment's example, key for key.
   expect(Object.keys(payload)).toEqual(['passport', 'idInfo']);
   expect(Object.keys(payload.passport)).toEqual([
     'passportNumber',
@@ -64,7 +64,6 @@ test('the example application goes through both steps and is submitted in the ex
       document: {
         fileName: PASSPORT_PDF.name,
         mimeType: PASSPORT_PDF.mimeType,
-        // Raw base64 of the file, without a "data:…;base64," prefix.
         base64: PASSPORT_PDF.buffer.toString('base64'),
       },
     },
@@ -81,6 +80,17 @@ test('the example application goes through both steps and is submitted in the ex
   await expect(summary).toContainText('784-1234-5678901-2');
   await expect(summary).toContainText('United Arab Emirates');
   await expect(summary).toContainText('passport.pdf');
+});
+
+test('Enter in a field submits Step 2 once it is complete', async ({ page }) => {
+  await goToStepTwo(page);
+  await fillIdInfoStep(page);
+
+  const submitted = page.waitForRequest(isApplicationPost);
+  await idNumberField(page).press('Enter');
+  await submitted;
+
+  await expect(heading(page, TEXT.en.submittedTitle)).toBeVisible();
 });
 
 test('Back keeps the answers on both steps', async ({ page }) => {
@@ -139,7 +149,6 @@ test('a refresh on the confirmation keeps the reference and leaves the answers o
   await expect(page.getByText("The summary isn't kept after a refresh")).toBeVisible();
   await expect(page.getByRole('region', { name: 'Summary' })).toHaveCount(0);
 
-  // Starting over clears the receipt and opens an empty Step 1.
   await button(page, TEXT.en.startNew).click();
   const dialog = page.getByRole('alertdialog', { name: TEXT.en.confirmTitle });
   await expect(dialog).toContainText(reference);

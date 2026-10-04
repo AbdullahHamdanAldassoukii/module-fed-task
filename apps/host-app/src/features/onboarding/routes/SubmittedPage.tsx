@@ -7,6 +7,7 @@ import { M, useT } from '../../../lib/i18n';
 import { notify } from '../../../lib/notify';
 import { PayloadViewer } from '../components/PayloadViewer';
 import { SummaryList } from '../components/SummaryList';
+import { WizardActions } from '../components/WizardActions';
 import { useOnboardingWizard } from '../hooks/useOnboardingWizard';
 import { onboardingSteps, wizardPagePath } from '../model';
 
@@ -20,7 +21,6 @@ function formatTimestamp(iso: string, locale: string): string {
   }).format(date);
 }
 
-/** The wizard's end state. Its heading and stepper come from the layout. */
 export function SubmittedPage() {
   const { t } = useT();
   const { locale } = useAppearance();
@@ -29,7 +29,6 @@ export function SubmittedPage() {
   const [confirming, setConfirming] = useState(false);
   const { submission } = state;
 
-  // Without a submission the layout's guard is already sending the user to Step 1.
   if (submission.status !== 'succeeded') return null;
 
   const { referenceId, submittedAt, summary, payload } = submission;
@@ -43,6 +42,9 @@ export function SubmittedPage() {
 
   return (
     <div className="wizard-section">
+      <WizardActions>
+        <Button onClick={() => setConfirming(true)}>{t(M.submitted.startNew)}</Button>
+      </WizardActions>
       <Alert title={t(M.submitted.received)} tone="success">
         {t(M.submitted.keepReference)}
       </Alert>
@@ -94,12 +96,6 @@ export function SubmittedPage() {
           title={t(M.payload.submittedTitle)}
         />
       ) : null}
-
-      <div className="wizard-actions">
-        <div className="wizard-actions-end">
-          <Button onClick={() => setConfirming(true)}>{t(M.submitted.startNew)}</Button>
-        </div>
-      </div>
 
       <AlertDialog
         cancelLabel={t(M.submitted.confirmCancel)}

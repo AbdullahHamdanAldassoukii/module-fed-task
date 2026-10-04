@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Navigate, Outlet } from 'react-router';
 import { useServices } from '../../../hooks/useServices';
 import { M, useT } from '../../../lib/i18n';
+import { WizardActionsSlot } from '../components/WizardActions';
 import { WizardStepper } from '../components/WizardStepper';
 import { PAGE_TITLE } from '../components/stepLabels';
 import { WizardProvider, useOnboardingWizard } from '../hooks/useOnboardingWizard';
@@ -13,13 +14,13 @@ function Frame() {
   const { t } = useT();
   const { currentPage } = useWizardNavigation();
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const [actionsSlot, setActionsSlot] = useState<HTMLDivElement | null>(null);
   const title = t(PAGE_TITLE[currentPage.id]);
 
   useEffect(() => {
     document.title = `${title} · ${t(M.app.title)}`;
   }, [title, t]);
 
-  // Focus follows the page, not the language: a language switch keeps focus where it is.
   useEffect(() => {
     headingRef.current?.focus();
   }, [currentPage.id]);
@@ -27,10 +28,15 @@ function Frame() {
   return (
     <div className="wizard">
       <WizardStepper currentId={currentPage.id} />
-      <h1 className="wizard-heading" ref={headingRef} tabIndex={-1}>
-        {title}
-      </h1>
-      <Outlet />
+      <div className="wizard-titlebar">
+        <h1 className="wizard-heading" ref={headingRef} tabIndex={-1}>
+          {title}
+        </h1>
+        <div className="wizard-titlebar-actions" ref={setActionsSlot} />
+      </div>
+      <WizardActionsSlot.Provider value={actionsSlot}>
+        <Outlet />
+      </WizardActionsSlot.Provider>
     </div>
   );
 }
@@ -50,7 +56,6 @@ function GuardedFrame() {
 
 export function OnboardingLayout() {
   const { sessionStorage } = useServices();
-  // Read before the first render, so a refresh lands on the same step with the same answers.
   const [restored] = useState(() => readPersistedWizard(sessionStorage));
 
   return (

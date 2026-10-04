@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useAppearance } from '../../../hooks/useAppearance';
 import { M, useT } from '../../../lib/i18n';
 import { PassportFormSlot } from '../../../remotes/passport-form';
+import { WizardActions } from '../components/WizardActions';
 import { useOnboardingWizard } from '../hooks/useOnboardingWizard';
 import { useWizardNavigation } from '../hooks/useWizardNavigation';
 
@@ -14,7 +15,6 @@ export function PassportStep() {
   const { colorScheme, locale } = useAppearance();
   const { goNext } = useWizardNavigation();
   const canProceed = state.passport.valid;
-  // Read once per visit: after "Start a new application" or "Fix it in the Passport step".
   const [focusOnMount] = useState(passportFocus);
 
   useEffect(() => {
@@ -23,6 +23,15 @@ export function PassportStep() {
 
   return (
     <section className="wizard-section">
+      <WizardActions hint={canProceed ? null : t(M.wizard.completeHint)} hintId={NEXT_HINT_ID}>
+        <Button
+          aria-describedby={canProceed ? undefined : NEXT_HINT_ID}
+          disabled={!canProceed}
+          onClick={goNext}
+        >
+          {t(M.wizard.next)}
+        </Button>
+      </WizardActions>
       {state.documentDropped ? (
         <Alert title={t(M.wizard.documentDroppedTitle)} tone="info">
           {t(M.wizard.documentDroppedBody)}
@@ -35,22 +44,6 @@ export function PassportStep() {
         onChange={(passport) => dispatch({ type: 'passportChanged', state: passport })}
         value={state.passport.data}
       />
-      <div className="wizard-actions wizard-actions-sticky">
-        <div className="wizard-actions-end">
-          {!canProceed ? (
-            <p className="wizard-hint" id={NEXT_HINT_ID}>
-              {t(M.wizard.completeHint)}
-            </p>
-          ) : null}
-          <Button
-            aria-describedby={canProceed ? undefined : NEXT_HINT_ID}
-            disabled={!canProceed}
-            onClick={goNext}
-          >
-            {t(M.wizard.next)}
-          </Button>
-        </div>
-      </div>
     </section>
   );
 }

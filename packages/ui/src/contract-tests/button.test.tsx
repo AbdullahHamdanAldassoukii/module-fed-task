@@ -16,8 +16,6 @@ describe('Button', () => {
     expect(screen.getByRole('button')).toHaveAttribute('type', 'button');
   });
   it('disabled and loading states block clicks and expose aria-busy', async () => {
-    // A disabled button ignores the pointer (pointer-events: none in both kits' styles; only MUI's
-    // are loaded here). The click is tried anyway and must not land.
     const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
     const onClick = rs.fn();
     const { rerender } = renderKit(
@@ -35,6 +33,14 @@ describe('Button', () => {
     const btn = screen.getByRole('button');
     expect(btn).toBeDisabled();
     expect(btn).toHaveAttribute('aria-busy', 'true');
+  });
+  it('names the form it submits, so it can sit outside that form', () => {
+    renderKit(
+      <Button form="application" type="submit">
+        Submit
+      </Button>,
+    );
+    expect(screen.getByRole('button')).toHaveAttribute('form', 'application');
   });
   it('exposes a ref via buttonRef', () => {
     const ref = { current: null as HTMLButtonElement | null };
