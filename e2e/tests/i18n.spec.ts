@@ -9,6 +9,8 @@ async function boxOf(locator: Locator) {
 // `first` comes before `second` in reading order: to its left in LTR, to its right in RTL.
 async function expectReadingOrder(first: Locator, second: Locator, direction: 'ltr' | 'rtl') {
   const [a, b] = [await boxOf(first), await boxOf(second)];
+  // On narrow screens the pair may stack; then reading order is top to bottom in both directions.
+  if (b.y >= a.y + a.height) return;
   if (direction === 'ltr') expect(a.x + a.width).toBeLessThanOrEqual(b.x);
   else expect(a.x).toBeGreaterThanOrEqual(b.x + b.width);
 }

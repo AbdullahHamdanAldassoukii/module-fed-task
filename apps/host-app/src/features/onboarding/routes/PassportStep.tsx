@@ -35,7 +35,7 @@ export function PassportStep() {
         onChange={(passport) => dispatch({ type: 'passportChanged', state: passport })}
         value={state.passport.data}
       />
-      <div className="wizard-actions">
+      <div className="wizard-actions wizard-actions-sticky">
         <div className="wizard-actions-end">
           {!canProceed ? (
             <p className="wizard-hint" id={NEXT_HINT_ID}>

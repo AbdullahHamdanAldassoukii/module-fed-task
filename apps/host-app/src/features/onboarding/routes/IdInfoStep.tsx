@@ -100,7 +100,7 @@ export function IdInfoStep() {
         waitingForNetwork={isSubmitting && isWaitingForNetwork}
       />
 
-      <div className="wizard-actions">
+      <div className="wizard-actions wizard-actions-sticky">
         <Button disabled={isSubmitting} variant="secondary" onClick={goBack}>
           {t(M.wizard.back)}
         </Button>

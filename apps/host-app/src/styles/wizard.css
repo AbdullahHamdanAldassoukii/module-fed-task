@@ -91,6 +91,49 @@
   justify-content: space-between;
 }
 
+/*
+ * The step's navigation stays on screen while the form scrolls under it, so Next and Submit
+ * (and the hint that explains why they are disabled) are always visible on any screen height.
+ * The bar's surface reaches both edges of the viewport; the buttons stay on the content column.
+ */
+.wizard-actions-sticky {
+  inset-block-end: 0;
+  isolation: isolate;
+  padding-block: 0.875rem calc(0.875rem + env(safe-area-inset-bottom, 0px));
+  position: sticky;
+  z-index: 10;
+}
+
+.wizard-actions-sticky::before {
+  background: var(--background);
+  border-block-start: 1px solid var(--border);
+  box-shadow: 0 -6px 16px -12px rgb(0 0 0 / 35%);
+  content: '';
+  inset-block: 0;
+  inset-inline: -100vmax;
+  position: absolute;
+  z-index: -1;
+}
+
+/* The bar's surface is wider than the page on purpose; clip it without creating a scroll box. */
+#main {
+  overflow-x: clip;
+}
+
+@media (max-width: 639px) {
+  .wizard-actions-sticky .wizard-actions-end {
+    flex: 1;
+  }
+
+  .wizard-actions-sticky .wizard-actions-end > button {
+    flex: 1;
+  }
+
+  .wizard-actions-sticky .wizard-hint {
+    flex-basis: 100%;
+  }
+}
+
 .wizard-actions-end {
   align-items: center;
   display: flex;
