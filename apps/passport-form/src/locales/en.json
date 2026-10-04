@@ -1,0 +1,47 @@
+{
+  "form": {
+    "title": "Passport details",
+    "intro": "All fields are required."
+  },
+  "fields": {
+    "passportNumber": "Passport number",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "issueDate": "Issue date",
+    "expiryDate": "Expiry date",
+    "document": "Passport document",
+    "documentHint": "PDF, PNG or JPEG. One file.",
+    "openCalendar": "Open calendar",
+    "chooseFile": "Choose file",
+    "dropFile": "Drag a file here, or",
+    "replaceFile": "Replace",
+    "removeFile": "Remove",
+    "readingFile": "Reading file…"
+  },
+  "errors": {
+    "required": "This field is required",
+    "invalidDate": "Enter a date as YYYY-MM-DD",
+    "expiryNotAfterIssue": "Expiry date must be after the issue date",
+    "tooManyFiles": "Choose one file only",
+    "unsupportedType": "Only PDF, PNG or JPEG files are accepted",
+    "readFailed": "We couldn't read this file. Try another one."
+  },
+  "standalone": {
+    "title": "Passport Form — standalone harness",
+    "language": "Language",
+    "languageName": {
+      "en": "English",
+      "ar": "Arabic"
+    },
+    "theme": "Theme",
+    "themeName": {
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "remount": "Simulate Back (remount)",
+    "reported": "Reported state",
+    "valid": "valid",
+    "invalid": "invalid",
+    "reports": "reports"
+  }
+}

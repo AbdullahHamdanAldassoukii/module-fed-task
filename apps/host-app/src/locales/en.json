@@ -14,7 +14,6 @@
     "back": "Back",
     "submit": "Submit",
     "completeHint": "Complete all fields to continue",
-    "passportPlaceholder": "Your passport details will be collected here.",
     "idInfoPlaceholder": "Your ID information will be collected here.",
     "stepOf": "Step {{current}} of {{total}}"
   },
@@ -52,6 +51,7 @@
     "title": "Developer panel",
     "apiScenario": "API scenario",
     "remoteScenario": "Remote scenario",
+    "remoteHint": "Changing a remote scenario reloads the form. If it fails, choose Normal and Try again.",
     "reset": "Reset",
     "scenarios": {
       "success": "Success",

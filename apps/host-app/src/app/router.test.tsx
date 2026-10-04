@@ -1,5 +1,10 @@
 import { afterEach, describe, expect, it, rs } from '@rstest/core';
-import { EMPTY_PASSPORT_DRAFT, type PassportFormState } from '@repo/passport-contract';
+import {
+  EMPTY_PASSPORT_DRAFT,
+  PASSPORT_FORM_CONTRACT_VERSION,
+  type PassportFormModule,
+  type PassportFormState,
+} from '@repo/passport-contract';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useEffect, useState } from 'react';
@@ -110,6 +115,21 @@ function routesWithSeededPassport(): RouteObject[] {
   ];
 }
 
+const quietRemoteModule: PassportFormModule = {
+  contractVersion: PASSPORT_FORM_CONTRACT_VERSION,
+  default: () => null,
+};
+
+const quietRemoteServices = () =>
+  fakeServices({
+    remotes: {
+      passportForm: {
+        load: async () => quietRemoteModule,
+        reset: () => undefined,
+      },
+    },
+  });
+
 describe('host routes', () => {
   it('redirects the root and onboarding index to the passport step', async () => {
     const root = renderRoutes(routes, '/');
@@ -161,7 +181,11 @@ describe('host routes', () => {
 
   it('keeps wizard state while Next and Back use the step URLs', async () => {
     const user = userEvent.setup();
-    const { router } = renderRoutes(routesWithSeededPassport(), '/onboarding/passport');
+    const { router } = renderRoutes(
+      routesWithSeededPassport(),
+      '/onboarding/passport',
+      quietRemoteServices(),
+    );
 
     const next = await screen.findByRole('button', { name: 'Next' });
     await waitFor(() => expect(next).toBeEnabled());

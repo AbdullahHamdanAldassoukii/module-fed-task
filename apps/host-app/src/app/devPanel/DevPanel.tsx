@@ -2,7 +2,9 @@ import { SCENARIOS } from '@repo/api-mocks/scenarios';
 import { Button } from '@repo/ui';
 import { useEffect, useRef, useSyncExternalStore } from 'react';
 import { M, type AppMessageKey, useT } from '../../lib/i18n';
+import { useServices } from '../../hooks/useServices';
 import { devScenarios, type ApiScenario } from '../devScenarios';
+import { REMOTE_SCENARIOS, type RemoteScenario } from '../remoteScenarios';
 import { devPanel } from './devPanelStore';
 
 const API_SCENARIO_LABEL = {
@@ -14,8 +16,16 @@ const API_SCENARIO_LABEL = {
   'validation-error': M.devPanel.scenarios['validation-error'],
 } satisfies Record<ApiScenario, AppMessageKey>;
 
+const REMOTE_SCENARIO_LABEL = {
+  normal: M.devPanel.remote.normal,
+  down: M.devPanel.remote.down,
+  slow: M.devPanel.remote.slow,
+  mismatch: M.devPanel.remote.mismatch,
+} satisfies Record<RemoteScenario, AppMessageKey>;
+
 export function DevPanel() {
   const { t } = useT();
+  const { remotes } = useServices();
   const isOpen = useSyncExternalStore(
     devPanel.subscribe,
     devPanel.getSnapshot,
@@ -25,6 +35,11 @@ export function DevPanel() {
     devScenarios.subscribe,
     () => devScenarios.getApiScenario(),
     () => devScenarios.getApiScenario(),
+  );
+  const remoteScenario = useSyncExternalStore(
+    devScenarios.subscribe,
+    () => devScenarios.getRemoteScenario(),
+    () => devScenarios.getRemoteScenario(),
   );
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -92,8 +107,34 @@ export function DevPanel() {
           </label>
         ))}
       </fieldset>
+      <fieldset style={{ border: 0, display: 'grid', gap: 6, padding: 0 }}>
+        <legend style={{ fontWeight: 600 }}>{t(M.devPanel.remoteScenario)}</legend>
+        {REMOTE_SCENARIOS.map((scenario) => (
+          <label key={scenario} style={{ alignItems: 'center', display: 'flex', gap: 6 }}>
+            <input
+              checked={remoteScenario === scenario}
+              name="remote-scenario"
+              onChange={() => {
+                devScenarios.setRemoteScenario(scenario);
+                remotes.passportForm.reset();
+              }}
+              type="radio"
+              value={scenario}
+            />
+            {t(REMOTE_SCENARIO_LABEL[scenario])}
+          </label>
+        ))}
+        <p style={{ fontSize: 13, margin: 0, opacity: 0.8 }}>{t(M.devPanel.remoteHint)}</p>
+      </fieldset>
       <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-        <Button size="sm" variant="ghost" onClick={() => devScenarios.reset()}>
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => {
+            devScenarios.reset();
+            remotes.passportForm.reset();
+          }}
+        >
           {t(M.devPanel.reset)}
         </Button>
       </div>

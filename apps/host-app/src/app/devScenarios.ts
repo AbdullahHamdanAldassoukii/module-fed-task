@@ -1,4 +1,5 @@
 import { SCENARIO_HEADER, type Scenario } from '@repo/api-mocks/scenarios';
+import { getRemoteScenario, setRemoteScenario, type RemoteScenario } from './remoteScenarios';
 
 export type ApiScenario = Scenario;
 
@@ -15,8 +16,14 @@ export const devScenarios = {
     listeners.add(listener);
     return () => listeners.delete(listener);
   },
+  getRemoteScenario,
+  setRemoteScenario: (next: RemoteScenario) => {
+    setRemoteScenario(next);
+    listeners.forEach((listener) => listener());
+  },
   reset: () => {
     apiScenario = 'success';
+    setRemoteScenario('normal');
     listeners.forEach((listener) => listener());
   },
 };

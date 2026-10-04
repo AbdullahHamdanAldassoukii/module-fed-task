@@ -1,6 +1,9 @@
 import { afterEach, describe, expect, it } from '@rstest/core';
 import { act, screen } from '@testing-library/react';
 import { createMemoryRouter, type DataRouter, type RouteObject } from 'react-router';
+import type { Services } from '../../../app/createServices';
+import { noopLogger } from '../../../lib/logger';
+import { createPassportFormLoader } from '../../../remotes/passport-form';
 import { renderWithProviders } from '../../../testing/renderWithProviders';
 import { IdInfoStep } from './IdInfoStep';
 import { OnboardingLayout } from './OnboardingLayout';
@@ -23,10 +26,10 @@ afterEach(() => {
   activeRouters.splice(0).forEach((router) => router.dispose());
 });
 
-function renderLayout(route: string, locale: 'en' | 'ar' = 'en') {
+function renderLayout(route: string, locale: 'en' | 'ar' = 'en', services?: Partial<Services>) {
   const router = createMemoryRouter(routes, { initialEntries: [route] });
   activeRouters.push(router);
-  return renderWithProviders(<div />, { locale, router });
+  return renderWithProviders(<div />, { locale, router, services });
 }
 
 describe('OnboardingLayout', () => {
@@ -69,5 +72,20 @@ describe('OnboardingLayout', () => {
     expect(unrelatedButton).toHaveFocus();
     expect(document.title).toBe('جواز السفر · معالج جواز السفر');
     unrelatedButton.remove();
+  });
+
+  it('shows the remote fallback and keeps Next disabled when the remote is down', async () => {
+    const loader = createPassportFormLoader({
+      manifestUrl: 'http://localhost:3001/mf-manifest.json',
+      logger: noopLogger,
+      importModule: async () => {
+        throw new Error('remote is down');
+      },
+      reregister: () => undefined,
+    });
+    renderLayout('/onboarding/passport', 'en', { remotes: { passportForm: loader } });
+
+    expect(await screen.findByRole('alert')).toHaveTextContent("The passport form couldn't load");
+    expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
   });
 });

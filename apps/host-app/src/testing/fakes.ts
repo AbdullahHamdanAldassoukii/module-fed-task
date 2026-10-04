@@ -3,6 +3,8 @@ import type { AppConfig } from '../lib/config';
 import type { HttpClient } from '../lib/http';
 import { noopLogger } from '../lib/logger';
 import { createMemoryStorage } from '../lib/storage';
+import { createPassportFormLoader } from '../remotes/passport-form';
+import { fakeModule } from './fakeRemotes';
 
 export const fakeConfig: AppConfig = {
   env: 'development',
@@ -26,6 +28,14 @@ export function fakeServices(overrides: Partial<Services> = {}): Services {
     },
     localStorage: createMemoryStorage(),
     sessionStorage: createMemoryStorage(),
+    remotes: {
+      passportForm: createPassportFormLoader({
+        manifestUrl: fakeConfig.remotes.passportForm.manifestUrl,
+        logger: noopLogger,
+        importModule: async () => fakeModule(),
+        reregister: () => undefined,
+      }),
+    },
     ...overrides,
   };
 }

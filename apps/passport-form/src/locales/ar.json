@@ -1,0 +1,47 @@
+{
+  "form": {
+    "title": "بيانات جواز السفر",
+    "intro": "جميع الحقول مطلوبة."
+  },
+  "fields": {
+    "passportNumber": "رقم جواز السفر",
+    "firstName": "الاسم الأول",
+    "lastName": "اسم العائلة",
+    "issueDate": "تاريخ الإصدار",
+    "expiryDate": "تاريخ الانتهاء",
+    "document": "وثيقة جواز السفر",
+    "documentHint": "PDF أو PNG أو JPEG. ملف واحد.",
+    "openCalendar": "فتح التقويم",
+    "chooseFile": "اختيار ملف",
+    "dropFile": "اسحب ملفاً إلى هنا، أو",
+    "replaceFile": "استبدال",
+    "removeFile": "إزالة",
+    "readingFile": "جارٍ قراءة الملف…"
+  },
+  "errors": {
+    "required": "هذا الحقل مطلوب",
+    "invalidDate": "أدخل التاريخ بصيغة YYYY-MM-DD",
+    "expiryNotAfterIssue": "يجب أن يكون تاريخ الانتهاء بعد تاريخ الإصدار",
+    "tooManyFiles": "اختر ملفاً واحداً فقط",
+    "unsupportedType": "تُقبل ملفات PDF أو PNG أو JPEG فقط",
+    "readFailed": "تعذر قراءة هذا الملف. جرّب ملفاً آخر."
+  },
+  "standalone": {
+    "title": "نموذج جواز السفر — بيئة مستقلة",
+    "language": "اللغة",
+    "languageName": {
+      "en": "الإنجليزية",
+      "ar": "العربية"
+    },
+    "theme": "المظهر",
+    "themeName": {
+      "light": "فاتح",
+      "dark": "داكن"
+    },
+    "remount": "محاكاة الرجوع (إعادة التحميل)",
+    "reported": "الحالة المُبلّغ عنها",
+    "valid": "صالح",
+    "invalid": "غير صالح",
+    "reports": "تقارير"
+  }
+}

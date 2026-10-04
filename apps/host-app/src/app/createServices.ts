@@ -3,6 +3,9 @@ import type { AppConfig } from '../lib/config';
 import { createAxiosHttpClient, type HttpClient } from '../lib/http';
 import { createConsoleLogger, type Logger } from '../lib/logger';
 import { createWebStorage, type KeyValueStorage } from '../lib/storage';
+import { createPassportFormLoader } from '../remotes/passport-form';
+import type { PassportFormModule } from '@repo/passport-contract';
+import type { RemoteModuleLoader } from '../remotes/types';
 
 export interface Services {
   config: AppConfig;
@@ -11,6 +14,7 @@ export interface Services {
   onboardingApi: OnboardingApi;
   localStorage: KeyValueStorage;
   sessionStorage: KeyValueStorage;
+  remotes: { passportForm: RemoteModuleLoader<PassportFormModule> };
 }
 
 export interface ServiceHooks {
@@ -41,5 +45,11 @@ export function createServices(
     onboardingApi: overrides.onboardingApi ?? createOnboardingApi(http),
     localStorage: overrides.localStorage ?? createWebStorage('local', logger),
     sessionStorage: overrides.sessionStorage ?? createWebStorage('session', logger),
+    remotes: overrides.remotes ?? {
+      passportForm: createPassportFormLoader({
+        manifestUrl: config.remotes.passportForm.manifestUrl,
+        logger,
+      }),
+    },
   };
 }

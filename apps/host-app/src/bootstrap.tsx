@@ -9,10 +9,15 @@ import { renderConfigErrorPage } from './app/configErrorPage';
 import { createServices } from './app/createServices';
 import { DevPanel } from './app/devPanel/DevPanel';
 import { getExtraRequestHeaders } from './app/devScenarios';
+import {
+  installPassportFormScenarioPlugin,
+  isScenarioCompatibleContractVersion,
+} from './app/remoteScenarios';
 import { loadConfig } from './lib/config';
 import { createAppI18n } from './lib/i18n';
 import { createConsoleLogger } from './lib/logger';
 import { createWebStorage } from './lib/storage';
+import { createPassportFormLoader } from './remotes/passport-form';
 
 async function fetchJson(url: string): Promise<unknown> {
   const response = await fetch(url, { cache: 'no-store' });
@@ -37,6 +42,9 @@ export async function bootstrap() {
       force: true,
     });
   }
+  if (import.meta.env.DEV || config.features.devPanel) {
+    installPassportFormScenarioPlugin(config.remotes.passportForm.manifestUrl);
+  }
   void preloadRemote([{ nameOrAlias: 'passport_form', exposes: ['./PassportForm'] }]).catch(
     () => undefined,
   );
@@ -53,7 +61,19 @@ export async function bootstrap() {
   const services = createServices(
     config,
     { getLanguage: () => i18n.language, getExtraHeaders: getExtraRequestHeaders },
-    { logger: bootstrapLogger, localStorage },
+    {
+      logger: bootstrapLogger,
+      localStorage,
+      remotes: {
+        passportForm: createPassportFormLoader({
+          manifestUrl: config.remotes.passportForm.manifestUrl,
+          logger: bootstrapLogger,
+          ...(import.meta.env.DEV || config.features.devPanel
+            ? { isCompatibleVersion: isScenarioCompatibleContractVersion }
+            : {}),
+        }),
+      },
+    },
   );
   const queryClient = createQueryClient(services);
 

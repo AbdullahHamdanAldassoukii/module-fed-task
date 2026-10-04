@@ -159,6 +159,9 @@ catalogs:
     postcss:
       specifier: ^8.5.0
       version: 8.5.28
+    postcss-prefix-selector:
+      specifier: ^2.2.1
+      version: 2.2.1
     prettier:
       specifier: ^3.9.9
       version: 3.9.9
@@ -372,6 +375,112 @@ importers:
       postcss:
         specifier: 'catalog:'
         version: 8.5.28
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
+  apps/passport-form:
+    dependencies:
+      '@emotion/react':
+        specifier: 'catalog:'
+        version: 11.14.0(@types/react@18.3.31)(react@18.3.1)
+      '@emotion/styled':
+        specifier: 'catalog:'
+        version: 11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1)
+      '@hookform/resolvers':
+        specifier: 'catalog:'
+        version: 5.9.1(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(react-hook-form@7.89.0(@types/react@18.3.31)(react@18.3.1))(zod@4.6.5)
+      '@mui/material':
+        specifier: 'catalog:'
+        version: 9.4.0(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@mui/x-date-pickers':
+        specifier: 'catalog:'
+        version: 9.14.0(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1))(@mui/material@9.4.0(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mui/system@9.4.0(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(date-fns@4.4.0)(dayjs@1.11.23)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@repo/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
+      '@repo/passport-contract':
+        specifier: workspace:*
+        version: link:../../packages/passport-contract
+      '@repo/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      dayjs:
+        specifier: 'catalog:'
+        version: 1.11.23
+      react:
+        specifier: 'catalog:'
+        version: 18.3.1
+      react-dom:
+        specifier: 'catalog:'
+        version: 18.3.1(react@18.3.1)
+      react-hook-form:
+        specifier: 'catalog:'
+        version: 7.89.0(@types/react@18.3.31)(react@18.3.1)
+      tailwindcss:
+        specifier: 'catalog:'
+        version: 4.3.3
+      zod:
+        specifier: 'catalog:'
+        version: 4.6.5
+    devDependencies:
+      '@module-federation/rsbuild-plugin':
+        specifier: 'catalog:'
+        version: 2.9.2(@rsbuild/core@2.2.11(@module-federation/runtime-tools@2.9.2))(@rspack/core@2.2.8(@module-federation/runtime-tools@2.9.2)(@swc/helpers@0.5.23))(typescript@5.9.3)
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
+      '@rsbuild/core':
+        specifier: 'catalog:'
+        version: 2.2.11(@module-federation/runtime-tools@2.9.2)
+      '@rsbuild/plugin-react':
+        specifier: 'catalog:'
+        version: 2.1.1(@rsbuild/core@2.2.11(@module-federation/runtime-tools@2.9.2))(@rspack/core@2.2.8(@module-federation/runtime-tools@2.9.2)(@swc/helpers@0.5.23))
+      '@rsdoctor/rspack-plugin':
+        specifier: 'catalog:'
+        version: 1.6.4(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@rsbuild/core@2.2.11(@module-federation/runtime-tools@2.9.2))(@rspack/core@2.2.8(@module-federation/runtime-tools@2.9.2)(@swc/helpers@0.5.23))
+      '@rstest/adapter-rsbuild':
+        specifier: 'catalog:'
+        version: 0.12.3(@rsbuild/core@2.2.11(@module-federation/runtime-tools@2.9.2))(@rstest/core@0.12.3(@module-federation/runtime-tools@2.9.2)(happy-dom@20.14.5))
+      '@rstest/core':
+        specifier: 'catalog:'
+        version: 0.12.3(@module-federation/runtime-tools@2.9.2)(happy-dom@20.14.5)
+      '@tailwindcss/postcss':
+        specifier: 'catalog:'
+        version: 4.3.3
+      '@testing-library/jest-dom':
+        specifier: 'catalog:'
+        version: 7.0.1(@testing-library/dom@10.4.2)
+      '@testing-library/react':
+        specifier: 'catalog:'
+        version: 16.3.3(@testing-library/dom@10.4.2)(@types/react-dom@18.3.7(@types/react@18.3.31))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@testing-library/user-event':
+        specifier: 'catalog:'
+        version: 14.6.7(@testing-library/dom@10.4.2)
+      '@types/node':
+        specifier: 'catalog:'
+        version: 22.20.5
+      '@types/react':
+        specifier: 'catalog:'
+        version: 18.3.31
+      '@types/react-dom':
+        specifier: 'catalog:'
+        version: 18.3.7(@types/react@18.3.31)
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.5(jiti@2.7.0)
+      happy-dom:
+        specifier: 'catalog:'
+        version: 20.14.5
+      postcss:
+        specifier: 'catalog:'
+        version: 8.5.28
+      postcss-prefix-selector:
+        specifier: 'catalog:'
+        version: 2.2.1(postcss@8.5.28)
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -4510,6 +4619,11 @@ packages:
   possible-typed-array-names@1.1.0:
     resolution: {integrity: sha512-/+5VFTchJDoVj3bhoqi6UeymcD00DAwb1nJwamzPvHEszJ4FpF6SNNbUbOS8yI56qHzdV8eK0qEfOSiodkTdxg==}
     engines: {node: '>= 0.4'}
+
+  postcss-prefix-selector@2.2.1:
+    resolution: {integrity: sha512-oMvY0GLVjg6b/N09B4h/xWYczc+LsX1O+laIpXDBbP6tZll+Cj5kXxdI0IZ23NOQ+XIko8VDsCFj+bhgYsmP8g==}
+    peerDependencies:
+      postcss: ^8.0.0
 
   postcss@8.5.28:
     resolution: {integrity: sha512-RRuzqDtt5Y9h3quz5hWhK+TPnsmVs6WwSU6LkJMeY4HstUEDuYTG8UJSdawMRzmzAtV+KEoG8N3Qg2qLy5vM/A==}
@@ -9464,6 +9578,10 @@ snapshots:
   picomatch@4.0.7: {}
 
   possible-typed-array-names@1.1.0: {}
+
+  postcss-prefix-selector@2.2.1(postcss@8.5.28):
+    dependencies:
+      postcss: 8.5.28
 
   postcss@8.5.28:
     dependencies:

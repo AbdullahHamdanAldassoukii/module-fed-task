@@ -1,0 +1,11 @@
+{
+  "extends": "@repo/typescript-config/react-app.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@remote-styles": ["src/styles/remote.shadcn.css"],
+      "@standalone-styles": ["src/styles/standalone.shadcn.css"]
+    }
+  },
+  "include": ["src", "scripts/**/*.ts", "rsbuild.config.ts", "rstest.config.ts"]
+}
