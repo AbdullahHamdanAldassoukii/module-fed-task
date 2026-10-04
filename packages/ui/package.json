@@ -1,0 +1,72 @@
+{
+  "name": "@repo/ui",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/kits/shadcn/index.ts",
+    "./shadcn": "./src/kits/shadcn/index.ts",
+    "./mui": "./src/kits/mui/index.ts",
+    "./api": "./src/api/index.ts",
+    "./tokens": "./src/tokens/tokens.ts",
+    "./styles/*": "./src/styles/*"
+  },
+  "scripts": {
+    "test": "rstest run",
+    "test:mui": "UI_KIT=mui rstest run",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json",
+    "lint": "eslint src",
+    "tokens:build": "tsx src/tokens/build-css.ts"
+  },
+  "dependencies": {
+    "radix-ui": "catalog:",
+    "cn": "catalog:",
+    "class-variance-authority": "catalog:",
+    "lucide-react": "catalog:",
+    "tw-animate-css": "catalog:",
+    "react-day-picker": "catalog:",
+    "date-fns": "catalog:",
+    "react-dropzone": "catalog:",
+    "sonner": "catalog:",
+    "@mui/stylis-plugin-rtl": "catalog:",
+    "@emotion/cache": "catalog:",
+    "stylis": "catalog:",
+    "notistack": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "@mui/material": "^9.4.0",
+    "@mui/x-date-pickers": "^9.14.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "dayjs": "^1.11.0",
+    "tailwindcss": "^4.3.0"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@rstest/core": "catalog:",
+    "@rsbuild/core": "catalog:",
+    "@rsbuild/plugin-react": "catalog:",
+    "@testing-library/jest-dom": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@testing-library/user-event": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@types/stylis": "catalog:",
+    "@emotion/react": "catalog:",
+    "@emotion/styled": "catalog:",
+    "@mui/material": "catalog:",
+    "@mui/x-date-pickers": "catalog:",
+    "dayjs": "catalog:",
+    "eslint": "catalog:",
+    "happy-dom": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "tailwindcss": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "extends": "@repo/typescript-config/react-library.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "#kit": ["./src/kits/shadcn/index.ts"],
+      "@/*": ["./src/kits/shadcn/*"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["src/tokens/build-css.ts"]
+}

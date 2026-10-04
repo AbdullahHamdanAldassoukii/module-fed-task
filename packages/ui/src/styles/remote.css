@@ -1,0 +1,16 @@
+@layer theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+@import 'tw-animate-css';
+@import './tokens.css';
+@import './theme.css';
+
+@layer base {
+  [data-passport-form-root] {
+    font-family: var(--font-sans);
+    color: var(--foreground);
+  }
+  [data-passport-form-root] * {
+    border-color: var(--border);
+  }
+}

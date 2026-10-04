@@ -1,0 +1,4 @@
+{
+  "extends": "@repo/typescript-config/node.json",
+  "include": ["rstest.config.ts", "src/tokens/build-css.ts", "src/tokens/tokens.ts"]
+}
