@@ -9,19 +9,25 @@ import {
   type ReactNode,
 } from 'react';
 import type { AppError } from '../../../lib/errors';
-import { initialWizardState, wizardReducer, type WizardAction, type WizardState } from '../model';
+import {
+  initialWizardState,
+  wizardReducer,
+  type PassportField,
+  type WizardAction,
+  type WizardState,
+} from '../model';
 
 export type OnboardingState = WizardState<AppError>;
 export type OnboardingAction = WizardAction<AppError>;
+export type PassportFocusTarget = 'firstField' | PassportField;
 
 interface WizardContextValue {
   state: OnboardingState;
   dispatch: Dispatch<OnboardingAction>;
-  /** Clears every answer and asks Step 1 to focus its first field when it shows. */
   startOver: () => void;
-  /** Set by startOver until Step 1 has taken the request. */
-  firstFieldFocusRequested: boolean;
-  firstFieldFocusTaken: () => void;
+  requestPassportFocus: (target: PassportFocusTarget) => void;
+  passportFocus: PassportFocusTarget | null;
+  passportFocusTaken: () => void;
 }
 
 const WizardContext = createContext<WizardContextValue | null>(null);
@@ -34,17 +40,24 @@ export function WizardProvider({
   initialState?: OnboardingState;
 }) {
   const [state, dispatch] = useReducer(wizardReducer<AppError>, initialState);
-  const [firstFieldFocusRequested, setFirstFieldFocusRequested] = useState(false);
+  const [passportFocus, setPassportFocus] = useState<PassportFocusTarget | null>(null);
 
   const startOver = useCallback(() => {
-    setFirstFieldFocusRequested(true);
+    setPassportFocus('firstField');
     dispatch({ type: 'reset' });
   }, []);
-  const firstFieldFocusTaken = useCallback(() => setFirstFieldFocusRequested(false), []);
+  const passportFocusTaken = useCallback(() => setPassportFocus(null), []);
 
   const value = useMemo(
-    () => ({ state, dispatch, startOver, firstFieldFocusRequested, firstFieldFocusTaken }),
-    [state, startOver, firstFieldFocusRequested, firstFieldFocusTaken],
+    () => ({
+      state,
+      dispatch,
+      startOver,
+      requestPassportFocus: setPassportFocus,
+      passportFocus,
+      passportFocusTaken,
+    }),
+    [state, startOver, passportFocus, passportFocusTaken],
   );
 
   return <WizardContext.Provider value={value}>{children}</WizardContext.Provider>;

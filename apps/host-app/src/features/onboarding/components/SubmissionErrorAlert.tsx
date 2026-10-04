@@ -2,7 +2,7 @@ import { Alert, Button } from '@repo/ui';
 import { useState, type ReactNode, type Ref } from 'react';
 import { errorPresentation, ValidationError, type AppError } from '../../../lib/errors';
 import { M, useT } from '../../../lib/i18n';
-import { rejectedFields, type ApplicationPayload } from '../model';
+import { rejectedFields, type ApplicationPayload, type PassportField } from '../model';
 import { PayloadViewer } from './PayloadViewer';
 
 export interface SubmissionFailure {
@@ -32,7 +32,8 @@ export function SubmissionErrorAlert({
   onRetry: () => void;
   onCancel: () => void;
   passportStepHref: string;
-  onOpenPassportStep: () => void;
+  /** Opens Step 1 at the first rejected passport field, when the server named one. */
+  onOpenPassportStep: (field: PassportField | undefined) => void;
   /** Focus moves here when a failure appears, so keyboard users land on its actions. */
   focusRef: Ref<HTMLDivElement>;
 }) {
@@ -78,13 +79,13 @@ export function SubmissionErrorAlert({
       content = (
         <Alert
           actions={
-            rejected.passport ? (
+            rejected.passportRejected ? (
               <a
                 className="wizard-link"
                 href={passportStepHref}
                 onClick={(event) => {
                   event.preventDefault();
-                  onOpenPassportStep();
+                  onOpenPassportStep(rejected.passport[0]);
                 }}
               >
                 {t(M.submission.fixPassport)}
@@ -94,10 +95,10 @@ export function SubmissionErrorAlert({
           title={t(M.submission.invalidTitle)}
           tone="error"
         >
-          {idInfoRejected || !rejected.passport ? (
+          {idInfoRejected || !rejected.passportRejected ? (
             <span className="wizard-alert-line">{t(M.submission.invalidBody)}</span>
           ) : null}
-          {rejected.passport ? (
+          {rejected.passportRejected ? (
             <span className="wizard-alert-line">{t(M.submission.invalidPassportBody)}</span>
           ) : null}
         </Alert>

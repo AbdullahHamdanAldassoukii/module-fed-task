@@ -83,7 +83,9 @@ export function SubmittedPage() {
           </header>
           <SummaryList locale={locale} summary={summary} />
         </section>
-      ) : null}
+      ) : (
+        <Alert tone="info">{t(M.submitted.privacyNote)}</Alert>
+      )}
 
       {payload ? (
         <PayloadViewer

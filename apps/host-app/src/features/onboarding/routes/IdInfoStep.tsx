@@ -25,7 +25,7 @@ export function IdInfoStep() {
   const { t } = useT();
   const { locale } = useAppearance();
   const navigate = useNavigate();
-  const { state, dispatch } = useOnboardingWizard();
+  const { state, dispatch, requestPassportFocus } = useOnboardingWizard();
   const { goBack, goTo } = useWizardNavigation();
   const { submission } = state;
   const isSubmitting = submission.status === 'submitting';
@@ -91,7 +91,10 @@ export function IdInfoStep() {
         failure={failure}
         focusRef={alertRef}
         onCancel={cancel}
-        onOpenPassportStep={() => goTo(passportStep.id)}
+        onOpenPassportStep={(field) => {
+          requestPassportFocus(field ?? 'firstField');
+          goTo(passportStep.id);
+        }}
         onRetry={submit}
         passportStepHref={wizardPagePath(passportStep)}
         waitingForNetwork={isSubmitting && isWaitingForNetwork}

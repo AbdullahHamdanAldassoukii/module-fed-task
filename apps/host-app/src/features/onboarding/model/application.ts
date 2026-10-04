@@ -11,7 +11,6 @@ export interface ApplicationPayload {
   idInfo: IdInfo;
 }
 
-/** What the confirmation screen lists; the document's content is left out. */
 export interface ApplicationSummary {
   firstName: string;
   lastName: string;
@@ -29,10 +28,6 @@ export interface SubmitApplicationResult {
   submittedAt: string;
 }
 
-/**
- * The request body, built field by field so its keys and their order are exactly the
- * assessment's example and nothing else travels (the idempotency key is a header).
- */
 export function buildApplicationPayload(
   passport: PassportData,
   idInfo: IdInfo,
@@ -78,7 +73,6 @@ export function isPayloadPreviewShortened(payload: ApplicationPayload): boolean 
   return payload.passport.document.base64.length > BASE64_PREVIEW_LENGTH;
 }
 
-/** Pretty JSON for the screen: the document's base64 is shortened; copies and downloads stay full. */
 export function payloadPreviewJson(payload: ApplicationPayload): string {
   const { base64 } = payload.passport.document;
   const preview = isPayloadPreviewShortened(payload)
@@ -101,21 +95,33 @@ export function payloadJson(payload: ApplicationPayload): string {
   return JSON.stringify(payload, null, 2);
 }
 
+export const PASSPORT_FIELDS = [
+  'passportNumber',
+  'firstName',
+  'lastName',
+  'issueDate',
+  'expiryDate',
+  'document',
+] as const satisfies readonly (keyof PassportData)[];
+export type PassportField = (typeof PASSPORT_FIELDS)[number];
+
 export interface RejectedFields {
   idInfo: Partial<Record<IdInfoField, typeof IdInfoFieldError.REJECTED>>;
-  /** True when the server rejected a passport field, which only Step 1 can fix. */
-  passport: boolean;
+  passportRejected: boolean;
+  passport: PassportField[];
 }
 
-/** Maps a 422 body's field paths (e.g. "idInfo.idNumber") onto the wizard's two forms. */
 export function rejectedFields(fieldErrors: Record<string, string>): RejectedFields {
-  const result: RejectedFields = { idInfo: {}, passport: false };
-  for (const path of Object.keys(fieldErrors)) {
-    const [section, field] = path.split('.');
-    if (section === 'passport') result.passport = true;
+  const result: RejectedFields = { idInfo: {}, passportRejected: false, passport: [] };
+  const paths = Object.keys(fieldErrors).map((path) => path.split('.'));
+  for (const [section, field] of paths) {
+    if (section === 'passport') result.passportRejected = true;
     const idInfoField = ID_INFO_FIELDS.find((name) => name === field);
     if (section === 'idInfo' && idInfoField) result.idInfo[idInfoField] = IdInfoFieldError.REJECTED;
   }
+  result.passport = PASSPORT_FIELDS.filter((name) =>
+    paths.some(([section, field]) => section === 'passport' && field === name),
+  );
   return result;
 }
 

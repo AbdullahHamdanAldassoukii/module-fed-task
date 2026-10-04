@@ -1,4 +1,4 @@
-import { Button } from '@repo/ui';
+import { Alert, Button } from '@repo/ui';
 import { useEffect, useState } from 'react';
 import { useAppearance } from '../../../hooks/useAppearance';
 import { M, useT } from '../../../lib/i18n';
@@ -10,21 +10,26 @@ const NEXT_HINT_ID = 'next-hint';
 
 export function PassportStep() {
   const { t } = useT();
-  const { state, dispatch, firstFieldFocusRequested, firstFieldFocusTaken } = useOnboardingWizard();
+  const { state, dispatch, passportFocus, passportFocusTaken } = useOnboardingWizard();
   const { colorScheme, locale } = useAppearance();
   const { goNext } = useWizardNavigation();
   const canProceed = state.passport.valid;
-  // Read once per visit: after "Start a new application" the first field takes focus.
-  const [autoFocusFirstField] = useState(firstFieldFocusRequested);
+  // Read once per visit: after "Start a new application" or "Fix it in the Passport step".
+  const [focusOnMount] = useState(passportFocus);
 
   useEffect(() => {
-    if (autoFocusFirstField) firstFieldFocusTaken();
-  }, [autoFocusFirstField, firstFieldFocusTaken]);
+    if (focusOnMount) passportFocusTaken();
+  }, [focusOnMount, passportFocusTaken]);
 
   return (
     <section className="wizard-section">
+      {state.documentDropped ? (
+        <Alert title={t(M.wizard.documentDroppedTitle)} tone="info">
+          {t(M.wizard.documentDroppedBody)}
+        </Alert>
+      ) : null}
       <PassportFormSlot
-        autoFocusFirstField={autoFocusFirstField}
+        focusOnMount={focusOnMount ?? undefined}
         colorScheme={colorScheme}
         locale={locale}
         onChange={(passport) => dispatch({ type: 'passportChanged', state: passport })}

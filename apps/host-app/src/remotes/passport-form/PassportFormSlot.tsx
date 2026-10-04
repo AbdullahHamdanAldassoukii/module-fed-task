@@ -13,6 +13,7 @@ import {
 } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import type {
+  PassportData,
   PassportDraft,
   PassportFormColorScheme,
   PassportFormLocale,
@@ -55,18 +56,55 @@ function lazyRemoteFor(loader: ModuleLoader, revision: number): LazyRemote {
   return component;
 }
 
-const FIRST_FIELD =
-  'input:not([type="hidden"]):not([type="file"]):not([disabled]), select:not([disabled]), textarea:not([disabled])';
+export type PassportFocusTarget = 'firstField' | keyof PassportData;
+
+/** The remote's field ids, part of what its team publishes alongside the contract. */
+const FIELD_ID = {
+  passportNumber: 'pf-passport-number',
+  firstName: 'pf-first-name',
+  lastName: 'pf-last-name',
+  issueDate: 'pf-issue-date',
+  expiryDate: 'pf-expiry-date',
+  document: 'pf-document',
+} satisfies Record<keyof PassportData, string>;
+
+const FOCUSABLE =
+  'input:not([type="hidden"]):not([type="file"]):not([disabled]):not([aria-hidden="true"]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [role="spinbutton"]';
+
+function focusField(container: HTMLElement, target: PassportFocusTarget) {
+  if (target === 'firstField') {
+    container.querySelector<HTMLElement>(FOCUSABLE)?.focus();
+    return;
+  }
+  const element = container.querySelector<HTMLElement>(`#${FIELD_ID[target]}`);
+  element?.focus();
+  if (!element || document.activeElement === element) return;
+  // A kit may put the id on a hidden input; focus the visible control of the same field.
+  for (let scope = element.parentElement; scope && scope !== container;) {
+    const control = scope.querySelector<HTMLElement>(FOCUSABLE);
+    if (control) {
+      control.focus();
+      return;
+    }
+    scope = scope.parentElement;
+  }
+}
 
 /** Rendered next to the remote, so its effect runs once the remote's fields exist. */
-function FocusFirstField({ containerRef }: { containerRef: RefObject<HTMLElement> }) {
+function FocusOnMount({
+  containerRef,
+  target,
+}: {
+  containerRef: RefObject<HTMLElement>;
+  target: PassportFocusTarget;
+}) {
   useEffect(() => {
     // After the page's own focus handling (the step heading) has run.
     const frame = requestAnimationFrame(() => {
-      containerRef.current?.querySelector<HTMLElement>(FIRST_FIELD)?.focus();
+      if (containerRef.current) focusField(containerRef.current, target);
     });
     return () => cancelAnimationFrame(frame);
-  }, [containerRef]);
+  }, [containerRef, target]);
 
   return null;
 }
@@ -99,8 +137,8 @@ export interface PassportFormSlotProps {
   onChange: (state: PassportFormState) => void;
   locale: PassportFormLocale;
   colorScheme: PassportFormColorScheme;
-  /** Moves focus to the form's first field once it has rendered (e.g. after starting over). */
-  autoFocusFirstField?: boolean;
+  /** Moves focus to a field once the form has rendered (after starting over, or to fix a value). */
+  focusOnMount?: PassportFocusTarget;
 }
 
 export function PassportFormSlot({
@@ -108,7 +146,7 @@ export function PassportFormSlot({
   onChange,
   locale,
   colorScheme,
-  autoFocusFirstField = false,
+  focusOnMount,
 }: PassportFormSlotProps) {
   const { remotes, logger } = useServices();
   const [attempt, setAttempt] = useState(0);
@@ -171,7 +209,7 @@ export function PassportFormSlot({
             locale={locale}
             onChange={handleChange}
           />
-          {autoFocusFirstField ? <FocusFirstField containerRef={containerRef} /> : null}
+          {focusOnMount ? <FocusOnMount containerRef={containerRef} target={focusOnMount} /> : null}
         </Suspense>
       </div>
     </ErrorBoundary>

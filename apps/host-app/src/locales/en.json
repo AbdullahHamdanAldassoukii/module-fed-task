@@ -35,7 +35,9 @@
     "completeHint": "Complete all fields to continue",
     "stepOf": "Step {{current}} of {{total}}",
     "submitting": "Submitting…",
-    "submitHint": "Complete all fields to submit"
+    "submitHint": "Complete all fields to submit",
+    "documentDroppedTitle": "Please choose your passport document again",
+    "documentDroppedBody": "The file was too large to keep while the page reloaded. Your other answers are still here."
   },
   "remote": {
     "loading": "Loading passport form…",
@@ -142,6 +144,7 @@
     "copyReference": "Copy reference number",
     "submittedAt": "Submitted",
     "summaryTitle": "Summary",
+    "privacyNote": "The summary isn't kept after a refresh, to protect your privacy. Your reference number is all you need.",
     "summary": {
       "name": "Name",
       "fullName": "{{firstName}} {{lastName}}",
