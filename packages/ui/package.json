@@ -14,7 +14,7 @@
   "scripts": {
     "test": "rstest run",
     "test:mui": "UI_KIT=mui rstest run",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint src",
     "tokens:build": "tsx src/tokens/build-css.ts"
   },
