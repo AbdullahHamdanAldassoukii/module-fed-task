@@ -2,11 +2,14 @@ import {
   lazy,
   Suspense,
   useCallback,
+  useEffect,
   useLayoutEffect,
   useMemo,
   useRef,
   useState,
   useSyncExternalStore,
+  type LazyExoticComponent,
+  type RefObject,
 } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import type {
@@ -23,16 +26,49 @@ import { LoadingSlot } from './LoadingSlot';
 import { RemoteUnavailable } from './RemoteUnavailable';
 import { createStateGuard } from './stateGuard';
 
-// `_attempt` is a useMemo dependency that gives every retry a new React.lazy cache.
-function createLazyRemote(
-  loader: { load: () => Promise<PassportFormModule> },
-  _attempt: number,
-  _scenarioRevision: number,
-) {
-  return lazy(async () => {
-    const module = await loader.load();
-    return { default: module.default };
-  });
+interface ModuleLoader {
+  load: () => Promise<PassportFormModule>;
+}
+type LazyRemote = LazyExoticComponent<PassportFormModule['default']>;
+
+/**
+ * One React.lazy per loader, shared by every mount of the slot: once resolved it renders at
+ * once, so going Back to Step 1 shows the form without a skeleton flash. A failed load drops
+ * its entry, so the next mount or Try again loads again.
+ */
+const lazyRemotes = new WeakMap<ModuleLoader, { revision: number; component: LazyRemote }>();
+
+function lazyRemoteFor(loader: ModuleLoader, revision: number): LazyRemote {
+  const cached = lazyRemotes.get(loader);
+  if (cached?.revision === revision) return cached.component;
+
+  const component: LazyRemote = lazy(() =>
+    loader.load().then(
+      (module) => ({ default: module.default }),
+      (error: unknown) => {
+        if (lazyRemotes.get(loader)?.component === component) lazyRemotes.delete(loader);
+        throw error;
+      },
+    ),
+  );
+  lazyRemotes.set(loader, { revision, component });
+  return component;
+}
+
+const FIRST_FIELD =
+  'input:not([type="hidden"]):not([type="file"]):not([disabled]), select:not([disabled]), textarea:not([disabled])';
+
+/** Rendered next to the remote, so its effect runs once the remote's fields exist. */
+function FocusFirstField({ containerRef }: { containerRef: RefObject<HTMLElement> }) {
+  useEffect(() => {
+    // After the page's own focus handling (the step heading) has run.
+    const frame = requestAnimationFrame(() => {
+      containerRef.current?.querySelector<HTMLElement>(FIRST_FIELD)?.focus();
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [containerRef]);
+
+  return null;
 }
 
 function sameDocument(left: PassportDraft['document'], right: PassportDraft['document']): boolean {
@@ -63,9 +99,17 @@ export interface PassportFormSlotProps {
   onChange: (state: PassportFormState) => void;
   locale: PassportFormLocale;
   colorScheme: PassportFormColorScheme;
+  /** Moves focus to the form's first field once it has rendered (e.g. after starting over). */
+  autoFocusFirstField?: boolean;
 }
 
-export function PassportFormSlot({ value, onChange, locale, colorScheme }: PassportFormSlotProps) {
+export function PassportFormSlot({
+  value,
+  onChange,
+  locale,
+  colorScheme,
+  autoFocusFirstField = false,
+}: PassportFormSlotProps) {
   const { remotes, logger } = useServices();
   const [attempt, setAttempt] = useState(0);
   const scenarioRevision = useSyncExternalStore(
@@ -77,6 +121,7 @@ export function PassportFormSlot({ value, onChange, locale, colorScheme }: Passp
   const latestValue = useRef(value);
   const latestOnChange = useRef(onChange);
   const lastForwarded = useRef<PassportFormState>();
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
     latestValue.current = value;
@@ -95,10 +140,8 @@ export function PassportFormSlot({ value, onChange, locale, colorScheme }: Passp
     },
     [guard],
   );
-  const Remote = useMemo(
-    () => createLazyRemote(remotes.passportForm, attempt, scenarioRevision),
-    [attempt, remotes.passportForm, scenarioRevision],
-  );
+  // Looked up on every render: after a failed load, Try again re-renders and gets a fresh one.
+  const Remote = lazyRemoteFor(remotes.passportForm, scenarioRevision);
   const retry = useCallback(
     (error: unknown) => {
       if (error instanceof RemoteLoadError) remotes.passportForm.reset();
@@ -119,15 +162,18 @@ export function PassportFormSlot({ value, onChange, locale, colorScheme }: Passp
         }
       }}
     >
-      <Suspense fallback={<LoadingSlot />}>
-        {/* eslint-disable-next-line react-hooks/static-components -- retry must recreate a rejected lazy component. */}
-        <Remote
-          colorScheme={colorScheme}
-          initialValue={value}
-          locale={locale}
-          onChange={handleChange}
-        />
-      </Suspense>
+      <div ref={containerRef}>
+        <Suspense fallback={<LoadingSlot />}>
+          {/* eslint-disable-next-line react-hooks/static-components -- one lazy component per loader, cached outside render; retry must replace a rejected one. */}
+          <Remote
+            colorScheme={colorScheme}
+            initialValue={value}
+            locale={locale}
+            onChange={handleChange}
+          />
+          {autoFocusFirstField ? <FocusFirstField containerRef={containerRef} /> : null}
+        </Suspense>
+      </div>
     </ErrorBoundary>
   );
 }

@@ -1,0 +1,305 @@
+/* Onboarding wizard layout. Plain CSS on the design tokens, so both UI kits render it alike. */
+
+.wizard {
+  display: grid;
+  gap: 1.5rem;
+  margin-inline: auto;
+  max-width: 720px;
+  padding: 1.5rem 1rem 3rem;
+}
+
+@media (min-width: 640px) {
+  .wizard {
+    padding-block-start: 2.5rem;
+  }
+}
+
+.wizard-heading {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  margin: 0;
+  text-wrap: balance;
+}
+
+/* Focused by script on every page change; it is not an interactive control. */
+.wizard-heading:focus {
+  outline: none;
+}
+
+.wizard-section {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.wizard-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 0.25rem);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 5%);
+  color: var(--card-foreground);
+  display: grid;
+  gap: 1.25rem;
+  padding: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .wizard-card {
+    padding: 1.5rem;
+  }
+}
+
+.wizard-card-header {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.wizard-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.wizard-card-description {
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.wizard-fields {
+  align-items: start;
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .wizard-fields {
+    gap: 1rem 1.25rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.wizard-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.wizard-actions-end {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-inline-start: auto;
+}
+
+.wizard-hint {
+  color: var(--muted-foreground);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.wizard-alert {
+  border-radius: var(--radius);
+  display: grid;
+  gap: 0.75rem;
+}
+
+.wizard-alert:focus {
+  outline: none;
+}
+
+.wizard-alert:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.wizard-alert-line {
+  display: block;
+}
+
+.wizard-alert-detail {
+  color: var(--muted-foreground);
+  font-size: 0.8125rem;
+  margin-block-start: 0.25rem;
+}
+
+.wizard-link {
+  align-self: center;
+  background: none;
+  border: 0;
+  border-radius: 2px;
+  color: var(--primary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.25rem 0;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.wizard-link:hover {
+  text-decoration-thickness: 2px;
+}
+
+.wizard-link:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.wizard-disclosure {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 0.25rem);
+  color: var(--card-foreground);
+}
+
+.wizard-disclosure-summary {
+  align-items: center;
+  border-radius: inherit;
+  cursor: pointer;
+  display: flex;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  gap: 0.625rem;
+  list-style: none;
+  padding: 1rem 1.25rem;
+}
+
+.wizard-disclosure-summary::-webkit-details-marker {
+  display: none;
+}
+
+/* A triangle that points along the reading direction and turns down when open. */
+.wizard-disclosure-summary::before {
+  border-block: 0.3em solid transparent;
+  border-inline-start: 0.45em solid currentColor;
+  content: '';
+  transition: transform 150ms ease;
+}
+
+.wizard-disclosure[open] > .wizard-disclosure-summary::before {
+  transform: rotate(90deg);
+}
+
+[dir='rtl'] .wizard-disclosure[open] > .wizard-disclosure-summary::before {
+  transform: rotate(-90deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wizard-disclosure-summary::before {
+    transition: none;
+  }
+}
+
+.wizard-disclosure-summary:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.wizard-disclosure-body {
+  border-block-start: 1px solid var(--border);
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem 1.25rem;
+}
+
+.wizard-button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.wizard-code {
+  background: var(--muted);
+  border-radius: var(--radius);
+  color: var(--foreground);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  margin: 0;
+  overflow-wrap: anywhere;
+  padding: 0.75rem 1rem;
+  white-space: pre-wrap;
+}
+
+.wizard-summary {
+  display: grid;
+  margin: 0;
+}
+
+.wizard-summary-row {
+  border-block-start: 1px solid var(--border);
+  display: grid;
+  gap: 0.125rem;
+  padding-block: 0.75rem;
+}
+
+.wizard-summary-row:first-child {
+  border-block-start: 0;
+  padding-block-start: 0;
+}
+
+.wizard-summary-row:last-child {
+  padding-block-end: 0;
+}
+
+@media (min-width: 640px) {
+  .wizard-summary-row {
+    gap: 1rem;
+    grid-template-columns: 11rem minmax(0, 1fr);
+  }
+}
+
+.wizard-summary dt,
+.wizard-receipt dt {
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+}
+
+.wizard-summary dd,
+.wizard-receipt dd {
+  font-weight: 500;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.wizard-receipt {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+}
+
+@media (min-width: 640px) {
+  .wizard-receipt {
+    align-items: start;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+}
+
+.wizard-receipt-item {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.wizard-reference-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.wizard-reference {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 1.375rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}

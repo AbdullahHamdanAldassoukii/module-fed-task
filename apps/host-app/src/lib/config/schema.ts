@@ -14,6 +14,10 @@ export const appConfigSchema = z
   .refine((config) => !(config.env === 'production' && config.features.browserMocks), {
     path: ['features', 'browserMocks'],
     message: 'browserMocks must be false in production',
+  })
+  .refine((config) => !(config.env === 'production' && config.features.devPanel), {
+    path: ['features', 'devPanel'],
+    message: 'devPanel must be false in production',
   });
 
 export type AppConfig = z.infer<typeof appConfigSchema>;

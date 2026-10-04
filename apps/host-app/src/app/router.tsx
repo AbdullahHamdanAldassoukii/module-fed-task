@@ -60,16 +60,24 @@ export const routes: RouteObject[] = [
           { index: true, element: <Navigate replace to="passport" /> },
           {
             path: 'passport',
-            handle: { stepId: 'passport' },
+            handle: { wizardPage: 'passport' },
             lazy: async () => ({
               Component: (await import('../features/onboarding/routes/PassportStep')).PassportStep,
             }),
           },
           {
             path: 'id-info',
-            handle: { stepId: 'idInfo' },
+            handle: { wizardPage: 'idInfo' },
             lazy: async () => ({
               Component: (await import('../features/onboarding/routes/IdInfoStep')).IdInfoStep,
+            }),
+          },
+          {
+            path: 'submitted',
+            handle: { wizardPage: 'submitted' },
+            lazy: async () => ({
+              Component: (await import('../features/onboarding/routes/SubmittedPage'))
+                .SubmittedPage,
             }),
           },
         ],

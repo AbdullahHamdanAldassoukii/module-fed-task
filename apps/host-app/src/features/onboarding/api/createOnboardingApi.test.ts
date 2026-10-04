@@ -10,7 +10,7 @@ describe('createOnboardingApi', () => {
     const api = createOnboardingApi({ send: send as HttpClient['send'] });
     const payload = {
       passport: {} as never,
-      idInfo: { idNumber: '784', nationality: 'AE' },
+      idInfo: { idNumber: '784', nationality: 'AE' as const },
     };
 
     await expect(
@@ -34,7 +34,7 @@ describe('createOnboardingApi', () => {
 
     await expect(
       createOnboardingApi(http).submitApplication(
-        { passport: {} as never, idInfo: { idNumber: '', nationality: '' } },
+        { passport: {} as never, idInfo: { idNumber: '', nationality: 'AE' } },
         { idempotencyKey: 'submission-1' },
       ),
     ).rejects.toThrow(/referenceId/);

@@ -4,22 +4,38 @@
     "skipToContent": "تخط إلى المحتوى",
     "loading": "جارٍ التحميل…"
   },
-  "header": { "language": "اللغة", "theme": "المظهر", "preferences": "التفضيلات" },
-  "theme": { "light": "فاتح", "dark": "داكن", "system": "النظام" },
-  "env": { "development": "تطوير", "qa": "اختبار" },
+  "header": {
+    "language": "اللغة",
+    "theme": "المظهر",
+    "preferences": "التفضيلات"
+  },
+  "theme": {
+    "light": "فاتح",
+    "dark": "داكن",
+    "system": "النظام"
+  },
+  "env": {
+    "development": "تطوير",
+    "qa": "اختبار"
+  },
   "steps": {
     "passport": "جواز السفر",
     "idInfo": "بيانات الهوية",
     "progress": "التقدم",
-    "status": { "complete": "مكتمل", "current": "الحالية", "upcoming": "القادمة" }
+    "status": {
+      "complete": "مكتمل",
+      "current": "الحالية",
+      "upcoming": "القادمة"
+    }
   },
   "wizard": {
     "next": "التالي",
     "back": "رجوع",
     "submit": "إرسال",
     "completeHint": "أكمل جميع الحقول للمتابعة",
-    "idInfoPlaceholder": "سيتم جمع معلومات هويتك هنا.",
-    "stepOf": "الخطوة {{current}} من {{total}}"
+    "stepOf": "الخطوة {{current}} من {{total}}",
+    "submitting": "جارٍ الإرسال…",
+    "submitHint": "أكمل جميع الحقول للإرسال"
   },
   "remote": {
     "loading": "جارٍ تحميل نموذج جواز السفر…",
@@ -71,5 +87,81 @@
       "slow": "بطيء (5 ث)",
       "mismatch": "عدم تطابق العقد"
     }
+  },
+  "common": {
+    "copied": "تم النسخ",
+    "copyFailed": "تعذر النسخ. حدد النص وانسخه يدويًا."
+  },
+  "idInfo": {
+    "title": "الهوية الإماراتية والجنسية",
+    "description": "أدخل رقم هويتك كما يظهر على بطاقة الهوية الإماراتية.",
+    "idNumber": {
+      "label": "رقم الهوية",
+      "hint": "15 رقمًا تبدأ بـ 784، مثل 784-1234-5678901-2",
+      "required": "أدخل رقم هويتك",
+      "format": "أدخل رقم هوية إماراتية من 15 رقمًا يبدأ بـ 784"
+    },
+    "nationality": {
+      "label": "الجنسية",
+      "hint": "كما تظهر في جواز سفرك",
+      "placeholder": "اختر الجنسية",
+      "required": "اختر جنسيتك"
+    },
+    "rejected": "لم تُقبل هذه القيمة. تحقق منها وحاول مرة أخرى."
+  },
+  "submission": {
+    "failedTitle": "تعذر إرسال طلبك.",
+    "failedBody": "معلوماتك لا تزال محفوظة هنا.",
+    "tryAgain": "حاول مرة أخرى",
+    "viewPayload": "عرض بيانات الطلب",
+    "hidePayload": "إخفاء بيانات الطلب",
+    "offlineTitle": "أنت غير متصل بالإنترنت.",
+    "offlineBody": "سنرسل طلبك عند عودة الاتصال.",
+    "cancel": "إلغاء",
+    "invalidTitle": "تحتاج بعض المعلومات إلى تصحيح.",
+    "invalidBody": "تحقق من الحقول المحددة، ثم أرسل مرة أخرى.",
+    "invalidPassportBody": "لم يُقبل جزء من بيانات جواز سفرك.",
+    "fixPassport": "صحّحها في خطوة جواز السفر",
+    "cancelledTitle": "تم إلغاء الإرسال.",
+    "cancelledBody": "لم يُرسل أي شيء. معلوماتك لا تزال محفوظة هنا.",
+    "requestId": "معرّف الطلب: {{requestId}}"
+  },
+  "payload": {
+    "title": "بيانات الطلب (JSON)",
+    "submittedTitle": "بيانات الطلب المرسلة (JSON)",
+    "copy": "نسخ JSON",
+    "download": "تنزيل JSON",
+    "shortened": "تم اختصار محتوى المستند بترميز base64 هنا؛ يتضمنه النسخ والتنزيل كاملًا."
+  },
+  "submitted": {
+    "title": "تم إرسال الطلب",
+    "received": "لقد استلمنا طلبك.",
+    "keepReference": "احتفظ بالرقم المرجعي في سجلاتك.",
+    "reference": "الرقم المرجعي",
+    "copy": "نسخ",
+    "copyReference": "نسخ الرقم المرجعي",
+    "submittedAt": "تاريخ الإرسال",
+    "summaryTitle": "الملخص",
+    "summary": {
+      "name": "الاسم",
+      "fullName": "{{firstName}} {{lastName}}",
+      "passportNumber": "رقم جواز السفر",
+      "validity": "مدة الصلاحية",
+      "validityRange": "{{from}} – {{to}}",
+      "document": "المستند",
+      "documentValue": "{{fileName}} ({{fileType}})",
+      "idNumber": "رقم الهوية",
+      "nationality": "الجنسية"
+    },
+    "documentType": {
+      "pdf": "مستند PDF",
+      "png": "صورة PNG",
+      "jpeg": "صورة JPEG"
+    },
+    "startNew": "بدء طلب جديد",
+    "confirmTitle": "بدء طلب جديد؟",
+    "confirmBody": "لن يكون الملخص وبيانات الطلب المعروضة هنا متاحة مرة أخرى. رقمك المرجعي هو {{referenceId}}.",
+    "confirmCancel": "إلغاء",
+    "confirmStart": "بدء من جديد"
   }
 }

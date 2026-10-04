@@ -1,7 +1,8 @@
 import { M, type AppMessageKey } from '../../../lib/i18n';
-import type { StepId } from '../model';
+import type { WizardPageId } from '../model';
 
-export const STEP_TITLE = {
+export const PAGE_TITLE = {
   passport: M.steps.passport,
   idInfo: M.steps.idInfo,
-} satisfies Record<StepId, AppMessageKey>;
+  submitted: M.submitted.title,
+} satisfies Record<WizardPageId, AppMessageKey>;

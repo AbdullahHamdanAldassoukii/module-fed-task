@@ -1,3 +1,6 @@
+@import '@repo/ui/styles/tokens.css';
+@import './wizard.css';
+
 html {
   font-family: ui-sans-serif, system-ui, sans-serif;
 }

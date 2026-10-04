@@ -1,4 +1,5 @@
 @import '@repo/ui/styles/globals.css';
+@import './wizard.css';
 @source '../../../../packages/ui/src/kits/shadcn';
 @source '../';
 

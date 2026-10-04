@@ -14,8 +14,8 @@ const routes: RouteObject[] = [
     path: '/onboarding',
     element: <OnboardingLayout />,
     children: [
-      { path: 'passport', element: <PassportStep />, handle: { stepId: 'passport' } },
-      { path: 'id-info', element: <IdInfoStep />, handle: { stepId: 'idInfo' } },
+      { path: 'passport', element: <PassportStep />, handle: { wizardPage: 'passport' } },
+      { path: 'id-info', element: <IdInfoStep />, handle: { wizardPage: 'idInfo' } },
     ],
   },
 ];

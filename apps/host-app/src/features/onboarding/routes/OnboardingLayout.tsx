@@ -2,29 +2,31 @@ import { useEffect, useRef } from 'react';
 import { Navigate, Outlet } from 'react-router';
 import { M, useT } from '../../../lib/i18n';
 import { WizardStepper } from '../components/WizardStepper';
-import { STEP_TITLE } from '../components/stepLabels';
+import { PAGE_TITLE } from '../components/stepLabels';
 import { WizardProvider, useOnboardingWizard } from '../hooks/useOnboardingWizard';
 import { useWizardNavigation } from '../hooks/useWizardNavigation';
-import { onboardingSteps } from '../model';
+import { wizardPagePath, wizardPages } from '../model';
 
 function Frame() {
   const { t } = useT();
-  const { currentStep } = useWizardNavigation();
+  const { currentPage } = useWizardNavigation();
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const title = t(PAGE_TITLE[currentPage.id]);
 
   useEffect(() => {
-    document.title = `${t(STEP_TITLE[currentStep.id])} · ${t(M.app.title)}`;
-  }, [currentStep.id, t]);
+    document.title = `${title} · ${t(M.app.title)}`;
+  }, [title, t]);
 
+  // Focus follows the page, not the language: a language switch keeps focus where it is.
   useEffect(() => {
     headingRef.current?.focus();
-  }, [currentStep.id]);
+  }, [currentPage.id]);
 
   return (
-    <div style={{ display: 'grid', gap: 16, margin: '0 auto', maxWidth: 720, padding: 16 }}>
-      <WizardStepper currentId={currentStep.id} />
-      <h1 ref={headingRef} tabIndex={-1} style={{ fontSize: 24, fontWeight: 600, outline: 'none' }}>
-        {t(STEP_TITLE[currentStep.id])}
+    <div className="wizard">
+      <WizardStepper currentId={currentPage.id} />
+      <h1 className="wizard-heading" ref={headingRef} tabIndex={-1}>
+        {title}
       </h1>
       <Outlet />
     </div>
@@ -33,13 +35,11 @@ function Frame() {
 
 function GuardedFrame() {
   const { state } = useOnboardingWizard();
-  const { currentStep } = useWizardNavigation();
+  const { currentPage } = useWizardNavigation();
 
-  if (!currentStep.canEnter(state)) {
-    const firstEnterableStep = onboardingSteps.find((step) => step.canEnter(state));
-    if (firstEnterableStep) {
-      return <Navigate replace to={`/onboarding/${firstEnterableStep.path}`} />;
-    }
+  if (!currentPage.canEnter(state)) {
+    const enterable = wizardPages.find((page) => page.canEnter(state));
+    if (enterable) return <Navigate replace to={wizardPagePath(enterable)} />;
   }
 
   return <Frame />;

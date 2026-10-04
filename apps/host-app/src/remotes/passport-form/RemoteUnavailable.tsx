@@ -1,20 +1,21 @@
 import { Alert, Button } from '@repo/ui';
-import { toAppError } from '../../lib/errors';
+import { errorPresentation, isAppError, RemoteLoadError } from '../../lib/errors';
 import { M, useT } from '../../lib/i18n';
 
 export function RemoteUnavailable({ error, onRetry }: { error: unknown; onRetry: () => void }) {
   const { t } = useT();
-  const appError = toAppError(error);
+  const appError = isAppError(error) ? error : new RemoteLoadError('load-failed', { cause: error });
+  const presentation = errorPresentation(appError);
+  const canRetry = presentation.action === 'retry';
 
   return (
     <Alert
-      actions={<Button onClick={onRetry}>{t(M.remote.tryAgain)}</Button>}
+      actions={canRetry ? <Button onClick={onRetry}>{t(M.remote.tryAgain)}</Button> : undefined}
       title={t(M.remote.unavailableTitle)}
       tone="error"
     >
-      {appError.code === 'REMOTE_CONTRACT'
-        ? t(M.errors.remoteIncompatible)
-        : t(M.remote.unavailable)}
+      {t(presentation.message)}
+      {canRetry ? ` ${t(M.remote.unavailable)}` : null}
     </Alert>
   );
 }

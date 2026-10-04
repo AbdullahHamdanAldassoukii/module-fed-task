@@ -1,9 +1,9 @@
 import { Stepper, type StepStatus } from '@repo/ui';
 import { M, useT } from '../../../lib/i18n';
-import { stepStatuses, type StepId } from '../model';
-import { STEP_TITLE } from './stepLabels';
+import { stepStatuses, type WizardPageId } from '../model';
+import { PAGE_TITLE } from './stepLabels';
 
-export function WizardStepper({ currentId }: { currentId: StepId }) {
+export function WizardStepper({ currentId }: { currentId: WizardPageId }) {
   const { t } = useT();
 
   return (
@@ -18,7 +18,7 @@ export function WizardStepper({ currentId }: { currentId: StepId }) {
       }
       steps={stepStatuses(currentId).map((step) => ({
         id: step.id,
-        label: t(STEP_TITLE[step.id]),
+        label: t(PAGE_TITLE[step.id]),
         status: step.status,
       }))}
     />

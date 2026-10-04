@@ -27,7 +27,7 @@ const table = {
   },
   CONFIG: { message: M.errors.config, action: 'none', showRequestId: false },
   CANCELLED: { message: M.errors.cancelled, action: 'none', showRequestId: false },
-  UNKNOWN: { message: M.errors.unknown, action: 'retry', showRequestId: true },
+  UNKNOWN: { message: M.errors.unknown, action: 'none', showRequestId: true },
 } satisfies Record<ErrorCode, ErrorPresentation>;
 
 export function errorPresentation(error: AppError): ErrorPresentation {

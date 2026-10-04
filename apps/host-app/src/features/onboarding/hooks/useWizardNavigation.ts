@@ -1,48 +1,55 @@
 import { useCallback } from 'react';
 import { useLocation, useMatches, useNavigate } from 'react-router';
-import { onboardingSteps, stepIndex, type StepId } from '../model';
+import {
+  isWizardPageId,
+  onboardingSteps,
+  wizardPagePath,
+  wizardPages,
+  type StepId,
+  type WizardPageId,
+} from '../model';
 
-function isStepId(value: unknown): value is StepId {
-  return value === 'passport' || value === 'idInfo';
-}
-
-function stepIdFromHandle(handle: unknown): StepId | undefined {
-  if (typeof handle !== 'object' || handle === null || !('stepId' in handle)) return undefined;
-  const stepId = (handle as Record<string, unknown>).stepId;
-  return isStepId(stepId) ? stepId : undefined;
+function pageIdFromHandle(handle: unknown): WizardPageId | undefined {
+  if (typeof handle !== 'object' || handle === null || !('wizardPage' in handle)) return undefined;
+  const pageId = (handle as Record<string, unknown>).wizardPage;
+  return isWizardPageId(pageId) ? pageId : undefined;
 }
 
 function hasPreviousWizardStep(value: unknown): value is { wizardPreviousStep: StepId } {
   if (typeof value !== 'object' || value === null || !('wizardPreviousStep' in value)) {
     return false;
   }
-  return isStepId((value as Record<string, unknown>).wizardPreviousStep);
+  return onboardingSteps.some(
+    (step) => step.id === (value as Record<string, unknown>).wizardPreviousStep,
+  );
 }
 
 export function useWizardNavigation() {
   const navigate = useNavigate();
   const location = useLocation();
-  const stepId = useMatches()
-    .map((match) => stepIdFromHandle(match.handle))
-    .find(isStepId);
-  const currentStep = onboardingSteps.find((step) => step.id === stepId) ?? onboardingSteps[0];
+  const pageId = useMatches()
+    .map((match) => pageIdFromHandle(match.handle))
+    .find((id) => id !== undefined);
+  const currentPage = wizardPages.find((page) => page.id === pageId) ?? wizardPages[0];
+  const stepPosition = onboardingSteps.findIndex((step) => step.id === currentPage.id);
+  const next = stepPosition === -1 ? undefined : onboardingSteps[stepPosition + 1];
+  const previous = stepPosition === -1 ? undefined : onboardingSteps[stepPosition - 1];
+
   const goTo = useCallback(
-    (id: StepId) => {
-      const step = onboardingSteps[stepIndex(id)];
-      if (step) void navigate(`/onboarding/${step.path}`);
+    (id: WizardPageId, options: { replace?: boolean } = {}) => {
+      const page = wizardPages.find((candidate) => candidate.id === id);
+      if (page) void navigate(wizardPagePath(page), options);
     },
     [navigate],
   );
-  const next = onboardingSteps[stepIndex(currentStep.id) + 1];
-  const previous = onboardingSteps[stepIndex(currentStep.id) - 1];
 
   const goNext = useCallback(() => {
     if (next) {
-      void navigate(`/onboarding/${next.path}`, {
-        state: { wizardPreviousStep: currentStep.id },
+      void navigate(wizardPagePath(next), {
+        state: { wizardPreviousStep: currentPage.id },
       });
     }
-  }, [currentStep.id, navigate, next]);
+  }, [currentPage.id, navigate, next]);
 
   const goBack = useCallback(() => {
     if (!previous) return;
@@ -55,11 +62,11 @@ export function useWizardNavigation() {
       return;
     }
 
-    void navigate(`/onboarding/${previous.path}`, { replace: true });
+    void navigate(wizardPagePath(previous), { replace: true });
   }, [location.state, navigate, previous]);
 
   return {
-    currentStep,
+    currentPage,
     goNext,
     goBack,
     goTo,

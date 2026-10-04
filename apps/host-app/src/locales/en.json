@@ -1,21 +1,41 @@
 {
-  "app": { "title": "Passport Wizard", "skipToContent": "Skip to content", "loading": "Loading…" },
-  "header": { "language": "Language", "theme": "Theme", "preferences": "Preferences" },
-  "theme": { "light": "Light", "dark": "Dark", "system": "System" },
-  "env": { "development": "DEV", "qa": "QA" },
+  "app": {
+    "title": "Passport Wizard",
+    "skipToContent": "Skip to content",
+    "loading": "Loading…"
+  },
+  "header": {
+    "language": "Language",
+    "theme": "Theme",
+    "preferences": "Preferences"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "env": {
+    "development": "DEV",
+    "qa": "QA"
+  },
   "steps": {
     "passport": "Passport",
     "idInfo": "ID info",
     "progress": "Progress",
-    "status": { "complete": "complete", "current": "current", "upcoming": "upcoming" }
+    "status": {
+      "complete": "complete",
+      "current": "current",
+      "upcoming": "upcoming"
+    }
   },
   "wizard": {
     "next": "Next",
     "back": "Back",
     "submit": "Submit",
     "completeHint": "Complete all fields to continue",
-    "idInfoPlaceholder": "Your ID information will be collected here.",
-    "stepOf": "Step {{current}} of {{total}}"
+    "stepOf": "Step {{current}} of {{total}}",
+    "submitting": "Submitting…",
+    "submitHint": "Complete all fields to submit"
   },
   "remote": {
     "loading": "Loading passport form…",
@@ -67,5 +87,81 @@
       "slow": "Slow (5 s)",
       "mismatch": "Contract mismatch"
     }
+  },
+  "common": {
+    "copied": "Copied",
+    "copyFailed": "Couldn't copy. Select the text and copy it instead."
+  },
+  "idInfo": {
+    "title": "Emirates ID and nationality",
+    "description": "Enter your ID number as it appears on your Emirates ID card.",
+    "idNumber": {
+      "label": "ID Number",
+      "hint": "15 digits starting with 784, e.g. 784-1234-5678901-2",
+      "required": "Enter your ID number",
+      "format": "Enter a 15-digit Emirates ID that starts with 784"
+    },
+    "nationality": {
+      "label": "Nationality",
+      "hint": "As shown on your passport",
+      "placeholder": "Select nationality",
+      "required": "Select your nationality"
+    },
+    "rejected": "This wasn't accepted. Check it and try again."
+  },
+  "submission": {
+    "failedTitle": "We couldn't submit your application.",
+    "failedBody": "Your information is still here.",
+    "tryAgain": "Try again",
+    "viewPayload": "View payload",
+    "hidePayload": "Hide payload",
+    "offlineTitle": "You're offline.",
+    "offlineBody": "We'll submit when you're back online.",
+    "cancel": "Cancel",
+    "invalidTitle": "Some information needs to be corrected.",
+    "invalidBody": "Check the highlighted fields, then submit again.",
+    "invalidPassportBody": "Part of your passport details wasn't accepted.",
+    "fixPassport": "Fix it in the Passport step",
+    "cancelledTitle": "Submission cancelled.",
+    "cancelledBody": "Nothing was sent. Your information is still here.",
+    "requestId": "Request ID: {{requestId}}"
+  },
+  "payload": {
+    "title": "Payload (JSON)",
+    "submittedTitle": "Submitted payload (JSON)",
+    "copy": "Copy JSON",
+    "download": "Download JSON",
+    "shortened": "The document's base64 content is shortened here; Copy and Download include it in full."
+  },
+  "submitted": {
+    "title": "Application submitted",
+    "received": "We've received your application.",
+    "keepReference": "Keep your reference number for your records.",
+    "reference": "Reference number",
+    "copy": "Copy",
+    "copyReference": "Copy reference number",
+    "submittedAt": "Submitted",
+    "summaryTitle": "Summary",
+    "summary": {
+      "name": "Name",
+      "fullName": "{{firstName}} {{lastName}}",
+      "passportNumber": "Passport number",
+      "validity": "Valid",
+      "validityRange": "{{from}} – {{to}}",
+      "document": "Document",
+      "documentValue": "{{fileName}} ({{fileType}})",
+      "idNumber": "ID number",
+      "nationality": "Nationality"
+    },
+    "documentType": {
+      "pdf": "PDF document",
+      "png": "PNG image",
+      "jpeg": "JPEG image"
+    },
+    "startNew": "Start a new application",
+    "confirmTitle": "Start a new application?",
+    "confirmBody": "The summary and payload shown here won't be available again. Your reference number is {{referenceId}}.",
+    "confirmCancel": "Cancel",
+    "confirmStart": "Start new"
   }
 }

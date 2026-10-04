@@ -14,7 +14,7 @@ I rejected a separate application image for each environment because the runtime
 
 ## Consequences
 
-One image can serve QA or production with different public configuration. Invalid configuration stops startup with a plain configuration error screen. Production configuration disables browser mocks and the developer panel through schema validation. Remote chunks remain portable because the remote uses `assetPrefix: 'auto'`.
+One image can serve QA or production with different public configuration. Invalid configuration stops startup with a plain configuration error screen. The schema rejects a production configuration that sets `features.browserMocks` or `features.devPanel` to true, so neither can be switched on in production by editing `config.json`. Remote chunks remain portable because the remote uses `assetPrefix: 'auto'`.
 
 ## What I checked
 
