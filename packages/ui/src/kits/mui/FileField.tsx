@@ -1,11 +1,11 @@
 import Box from '@mui/material/Box';
 import MuiButton from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { useEffect, useRef } from 'react';
-import { useDropzone } from 'react-dropzone';
+import { useRef } from 'react';
 import type { FileFieldFile, FileFieldProps } from '../../api';
 import { formatBytes } from '../../shared/formatBytes';
-import { FieldShell, fieldAria, fieldLabelId } from './FieldShell';
+import { useFileFieldBehavior } from '../../shared/useFileFieldBehavior';
+import { FieldShell } from './FieldShell';
 import { CloudUploadIcon, FileTextIcon, ImageIcon } from './icons';
 import { Progress } from './Progress';
 import { visuallyHidden } from './VisuallyHidden';
@@ -25,61 +25,11 @@ function FileThumbnail({ file }: { file: FileFieldFile }) {
   return <Icon aria-hidden="true" sx={{ fontSize: 32, flexShrink: 0, color: 'text.secondary' }} />;
 }
 
-export function FileField({
-  id,
-  label,
-  description,
-  error,
-  required,
-  disabled,
-  accept,
-  onFilesSelected,
-  file,
-  onRemove,
-  labels,
-  busyLabel,
-}: FileFieldProps) {
-  const inputId = `${id}-input`;
-  const isDisabled = Boolean(disabled) || Boolean(busyLabel);
+export function FileField(props: FileFieldProps) {
+  const { id, label, description, error, required, file, onRemove, labels, busyLabel } = props;
   const chooseRef = useRef<HTMLButtonElement>(null);
   const replaceRef = useRef<HTMLButtonElement>(null);
-  // Set by Choose file, Replace and Remove: what they start hides or disables the focused button.
-  const keepFocus = useRef(false);
-  const aria = fieldAria(id, { description, error, required });
-  // The keyboard reaches the buttons, not the file input, so the label, hint and error describe
-  // them as well. aria-required is not allowed on a button; it stays on the input.
-  const buttonAria = {
-    'aria-describedby': [fieldLabelId(id), aria['aria-describedby']].filter(Boolean).join(' '),
-    'aria-invalid': aria['aria-invalid'],
-  };
-  const { getRootProps, getInputProps, open, isDragActive, rootRef } = useDropzone({
-    multiple: false,
-    noClick: true,
-    noKeyboard: true,
-    disabled: isDisabled,
-    // Everything offered goes to the form, accepted or not: it owns the count and type rules.
-    onDrop: (accepted, rejected) => {
-      const all = [...accepted, ...rejected.map((rejection) => rejection.file)];
-      if (all.length > 0) onFilesSelected(all);
-    },
-  });
-
-  // A picked file swaps Choose file for the file chip, Remove swaps it back, and reading a file
-  // disables the buttons: focus falls to the page. Once the field is usable again, carry on from
-  // the button it now shows, unless the user has moved elsewhere in the meantime.
-  useEffect(() => {
-    if (isDisabled || !keepFocus.current) return;
-    keepFocus.current = false;
-    const active = document.activeElement;
-    const movedOn = active && active !== document.body && !rootRef.current?.contains(active);
-    if (movedOn) return;
-    (file ? replaceRef : chooseRef).current?.focus();
-  }, [file, isDisabled, rootRef]);
-
-  const pickFile = () => {
-    keepFocus.current = true;
-    open();
-  };
+  const field = useFileFieldBehavior(props, { choose: chooseRef, replace: replaceRef });
 
   return (
     <FieldShell
@@ -88,10 +38,10 @@ export function FileField({
       description={description}
       error={error}
       required={required}
-      labelFor={inputId}
+      labelFor={field.inputId}
     >
       <Box
-        {...getRootProps({ 'data-testid': 'file-dropzone' })}
+        {...field.rootProps({})}
         sx={{
           position: 'relative',
           display: 'flex',
@@ -103,24 +53,23 @@ export function FileField({
           border: 1,
           borderStyle: 'dashed',
           borderRadius: 1,
-          borderColor: error ? 'error.main' : isDragActive ? 'primary.main' : 'divider',
-          bgcolor: isDragActive ? 'action.hover' : undefined,
-          opacity: isDisabled ? 0.6 : undefined,
+          borderColor: error ? 'error.main' : field.isDragActive ? 'primary.main' : 'divider',
+          bgcolor: field.isDragActive ? 'action.hover' : undefined,
+          opacity: field.isDisabled ? 0.6 : undefined,
           transition: 'border-color 150ms, background-color 150ms',
         }}
       >
         <input
-          {...getInputProps({
-            id: inputId,
-            accept: accept.join(','),
-            disabled: isDisabled,
-            // The visible label names the input; react-dropzone's default aria-label would replace it.
-            'aria-label': undefined,
+          {...field.inputProps({
             // Out of the layout; react-dropzone's own style is a 0×0 block that still takes a gap.
             style: visuallyHidden,
-            ...aria,
           })}
         />
+        {required ? (
+          <span id={field.requiredId} hidden>
+            {labels.required}
+          </span>
+        ) : null}
         {file ? (
           <Box
             sx={{
@@ -145,9 +94,9 @@ export function FileField({
               ref={replaceRef}
               variant="outlined"
               size="small"
-              onClick={pickFile}
-              disabled={isDisabled}
-              {...buttonAria}
+              onClick={field.pickFile}
+              disabled={field.isDisabled}
+              {...field.buttonAria}
             >
               {labels.replace}
             </MuiButton>
@@ -155,11 +104,8 @@ export function FileField({
               <MuiButton
                 variant="text"
                 size="small"
-                onClick={() => {
-                  keepFocus.current = true;
-                  onRemove();
-                }}
-                disabled={isDisabled}
+                onClick={field.removeFile}
+                disabled={field.isDisabled}
               >
                 {labels.remove}
               </MuiButton>
@@ -175,9 +121,9 @@ export function FileField({
               ref={chooseRef}
               variant="outlined"
               size="small"
-              onClick={pickFile}
-              disabled={isDisabled}
-              {...buttonAria}
+              onClick={field.pickFile}
+              disabled={field.isDisabled}
+              {...field.buttonAria}
             >
               {labels.choose}
             </MuiButton>

@@ -1,7 +1,7 @@
 {
   "form": {
     "title": "Passport details",
-    "intro": "All fields are required."
+    "intro": "Enter the details exactly as they appear on the passport. All fields are required."
   },
   "fields": {
     "passportNumber": "Passport number",
@@ -9,19 +9,26 @@
     "lastName": "Last name",
     "issueDate": "Issue date",
     "expiryDate": "Expiry date",
+    "issueDateCalendar": "Choose the issue date",
+    "expiryDateCalendar": "Choose the expiry date",
+    "datePlaceholder": {
+      "year": "YYYY",
+      "month": "MM",
+      "day": "DD"
+    },
     "document": "Passport document",
-    "documentHint": "PDF, PNG or JPEG. One file.",
-    "openCalendar": "Open calendar",
+    "documentHint": "A scan or photo of the passport's data page: PDF, PNG or JPEG. One file.",
     "chooseFile": "Choose file",
     "dropFile": "Drag a file here, or",
     "replaceFile": "Replace",
     "removeFile": "Remove",
-    "readingFile": "Reading file…"
+    "readingFile": "Reading file…",
+    "required": "Required"
   },
   "errors": {
     "required": "This field is required",
-    "invalidDate": "Enter a date as YYYY-MM-DD",
-    "expiryNotAfterIssue": "Expiry date must be after the issue date",
+    "invalidDate": "Enter a full date as YYYY-MM-DD, for example 2024-01-15",
+    "expiryNotAfterIssue": "The expiry date must be after the issue date ({{issueDate}})",
     "tooManyFiles": "Choose one file only",
     "unsupportedType": "Only PDF, PNG or JPEG files are accepted",
     "readFailed": "We couldn't read this file. Try another one."

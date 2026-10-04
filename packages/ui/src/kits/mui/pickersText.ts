@@ -1,9 +1,6 @@
 import type { PickersLocaleText } from '@mui/x-date-pickers/locales';
+import type { DatePlaceholder } from '../../api';
 
-/**
- * MUI X ships no Arabic texts. These are the ones its desktop date picker reads here: the names
- * of the date parts and the calendar's navigation (the open button takes the field's own label).
- */
 const arabic: Partial<PickersLocaleText> = {
   previousMonth: 'الشهر السابق',
   nextMonth: 'الشهر التالي',
@@ -17,6 +14,14 @@ const arabic: Partial<PickersLocaleText> = {
   empty: 'فارغ',
 };
 
-export function pickersTextFor(locale: string): Partial<PickersLocaleText> | undefined {
-  return locale === 'ar' ? arabic : undefined;
+export function pickersTextFor(
+  locale: string,
+  placeholder: DatePlaceholder,
+): Partial<PickersLocaleText> {
+  return {
+    ...(locale === 'ar' ? arabic : undefined),
+    fieldYearPlaceholder: () => placeholder.year,
+    fieldMonthPlaceholder: () => placeholder.month,
+    fieldDayPlaceholder: () => placeholder.day,
+  };
 }

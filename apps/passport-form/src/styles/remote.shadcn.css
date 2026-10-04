@@ -1,3 +1,4 @@
 @import '@repo/ui/styles/remote.css';
+@import '../features/passport/components/passportForm.css';
 @source '../../../../packages/ui/src/kits/shadcn';
 @source '../';

@@ -11,6 +11,7 @@ const labels = {
   drop: 'Drop your passport here',
   replace: 'Replace',
   remove: 'Remove',
+  required: 'Required',
 };
 const base = {
   id: 'doc',
@@ -26,7 +27,6 @@ const chosen: FileFieldFile = {
   sizeBytes: 2048,
 };
 
-/** A drop as browsers deliver it: react-dropzone reads dropped files from dataTransfer.items. */
 const dropFiles = (zone: HTMLElement, files: File[]) => {
   fireEvent.drop(zone, {
     dataTransfer: {
@@ -37,14 +37,9 @@ const dropFiles = (zone: HTMLElement, files: File[]) => {
   });
 };
 
-/** The picker opens through the file input; stub it so the test sees the request. */
 const stubPicker = () =>
   rs.spyOn(screen.getByLabelText(/Passport document/), 'click').mockImplementation(() => {});
 
-/**
- * A parent like the form: busy while it reads a picked file, then shows it. Reading ends when
- * the test says so; the form may show the file only once it is read, or already while it reads.
- */
 const renderPicking = ({ showWhileReading }: { showWhileReading: boolean }) => {
   const reading = { finish: () => {} };
   function Picking() {
@@ -81,7 +76,6 @@ const renderPicking = ({ showWhileReading }: { showWhileReading: boolean }) => {
   };
 };
 
-/** Choose file from the keyboard, and the native picker hands back a file without moving focus. */
 const pickFromKeyboard = async (file: File) => {
   const picker = stubPicker();
   await userEvent.tab();
@@ -126,10 +120,10 @@ describe('FileField', () => {
     expect(onRemove).toHaveBeenCalled();
     expect(screen.getByRole('button', { name: 'Replace' })).toBeInTheDocument();
   });
-  it('busy state shows progress and disables the control', () => {
+  it('busy state shows progress and keeps the control usable for a replacement', () => {
     renderKit(<FileField {...base} busyLabel="Reading file…" onFilesSelected={() => {}} />);
     expect(screen.getByRole('progressbar', { name: 'Reading file…' })).toBeInTheDocument();
-    expect(screen.getByLabelText(/Passport document/)).toBeDisabled();
+    expect(screen.getByLabelText(/Passport document/)).toBeEnabled();
   });
   it('wires error', () => {
     renderKit(<FileField {...base} error="Only PDF or image" onFilesSelected={() => {}} />);

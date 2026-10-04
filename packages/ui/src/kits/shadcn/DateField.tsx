@@ -12,11 +12,13 @@ import { Input } from './components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from './components/ui/popover';
 import { FieldShell, fieldAria } from './FieldShell';
 
-// The calendar's year range, computed once rather than on every render.
 const START_MONTH = new Date(1950, 0);
 const END_MONTH = new Date(new Date().getFullYear() + 20, 11);
 
-// Arabic short weekday names ("ثلاثاء") are wider than a day column; the narrow letters fit.
+const LRM = '\u200E';
+const placeholderText = ({ year, month, day }: DateFieldProps['placeholder']) =>
+  LRM + [year, month, day].join(`${LRM}-${LRM}`);
+
 const arabicFormatters = {
   formatWeekdayName: (weekday: Date) => format(weekday, 'ccccc', { locale: ar }),
 };
@@ -36,6 +38,7 @@ export function DateField({
   max,
   name,
   openCalendarLabel,
+  placeholder,
   inputRef,
 }: DateFieldProps) {
   const ownInputRef = useElementRef<HTMLInputElement>(inputRef);
@@ -43,8 +46,6 @@ export function DateField({
   const calendarRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const isArabic = locale === 'ar';
-  // The text as typed, so an incomplete date stays on screen, and the value prop it goes with.
-  // Every new value from the parent (its echo, a reset, a restore) replaces the text.
   const [typed, setTyped] = useState({ text: value, value });
   if (typed.value !== value) setTyped({ text: value, value });
   const text = typed.value === value ? typed.text : value;
@@ -60,10 +61,9 @@ export function DateField({
   const update = (raw: string) => {
     const masked = maskDateText(raw);
     setTyped({ text: masked, value });
-    onChange(masked); // '' | ISO | partial text; the form decides what partial means
+    onChange(masked);
   };
 
-  // The input, the calendar button and the open calendar are one field: moving between them is not leaving it.
   const handleBlur = (event: FocusEvent<HTMLDivElement>) => {
     const next = event.relatedTarget;
     const calendar = calendarRef.current?.closest('[data-slot="popover-content"]');
@@ -84,9 +84,8 @@ export function DateField({
           }}
           disabled={disabled}
           inputMode="numeric"
-          placeholder="YYYY-MM-DD"
+          placeholder={placeholderText(placeholder)}
           autoComplete="off"
-          // A date is a left-to-right run; in RTL it still lines up with the other fields.
           dir="ltr"
           className="rtl:text-right"
           {...fieldAria(id, { description, error, required })}
@@ -98,8 +97,6 @@ export function DateField({
               size="icon"
               aria-label={openCalendarLabel}
               disabled={disabled}
-              // Safari does not focus a pressed button, so the input would report a blur with
-              // nowhere to go; focus stays in the input until the calendar takes it.
               onMouseDown={(event) => {
                 event.preventDefault();
               }}
@@ -112,7 +109,6 @@ export function DateField({
             className="w-auto p-0"
             align="end"
             onOpenAutoFocus={(event) => {
-              // Start on the selected day (or today), as date pickers do, not on the month list.
               const day = calendarRef.current?.querySelector<HTMLElement>(
                 '[role="grid"] [tabindex="0"]',
               );
@@ -124,7 +120,6 @@ export function DateField({
             <div ref={calendarRef}>
               <Calendar
                 mode="single"
-                // Picking the selected day again keeps it (and closes) instead of clearing it.
                 required
                 selected={selected}
                 defaultMonth={selected ?? minDate ?? undefined}

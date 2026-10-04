@@ -1,7 +1,7 @@
 {
   "form": {
     "title": "بيانات جواز السفر",
-    "intro": "جميع الحقول مطلوبة."
+    "intro": "أدخل البيانات كما تظهر في جواز السفر تماماً. جميع الحقول مطلوبة."
   },
   "fields": {
     "passportNumber": "رقم جواز السفر",
@@ -9,22 +9,29 @@
     "lastName": "اسم العائلة",
     "issueDate": "تاريخ الإصدار",
     "expiryDate": "تاريخ الانتهاء",
+    "issueDateCalendar": "اختيار تاريخ الإصدار",
+    "expiryDateCalendar": "اختيار تاريخ الانتهاء",
+    "datePlaceholder": {
+      "year": "سنة",
+      "month": "شهر",
+      "day": "يوم"
+    },
     "document": "وثيقة جواز السفر",
-    "documentHint": "PDF أو PNG أو JPEG. ملف واحد.",
-    "openCalendar": "فتح التقويم",
+    "documentHint": "صورة أو نسخة ممسوحة لصفحة البيانات في الجواز: PDF أو PNG أو JPEG. ملف واحد.",
     "chooseFile": "اختيار ملف",
     "dropFile": "اسحب ملفاً إلى هنا، أو",
     "replaceFile": "استبدال",
     "removeFile": "إزالة",
-    "readingFile": "جارٍ قراءة الملف…"
+    "readingFile": "جارٍ قراءة الملف…",
+    "required": "مطلوب"
   },
   "errors": {
     "required": "هذا الحقل مطلوب",
-    "invalidDate": "أدخل التاريخ بصيغة YYYY-MM-DD",
-    "expiryNotAfterIssue": "يجب أن يكون تاريخ الانتهاء بعد تاريخ الإصدار",
+    "invalidDate": "أدخل تاريخاً كاملاً بصيغة سنة-شهر-يوم، مثل 2024-01-15",
+    "expiryNotAfterIssue": "يجب أن يكون تاريخ الانتهاء بعد تاريخ الإصدار ({{issueDate}})",
     "tooManyFiles": "اختر ملفاً واحداً فقط",
     "unsupportedType": "تُقبل ملفات PDF أو PNG أو JPEG فقط",
-    "readFailed": "تعذر قراءة هذا الملف. جرّب ملفاً آخر."
+    "readFailed": "تعذرت قراءة هذا الملف. جرّب ملفاً آخر."
   },
   "standalone": {
     "title": "نموذج جواز السفر — بيئة مستقلة",

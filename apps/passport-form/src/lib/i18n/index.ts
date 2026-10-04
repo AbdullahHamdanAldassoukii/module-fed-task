@@ -3,6 +3,7 @@ import {
   createMessageKeys,
   createUseT,
   type Locale,
+  type Message,
   type TranslationKey,
 } from '@repo/i18n';
 import ar from '../../locales/ar.json';
@@ -12,6 +13,7 @@ const resources = { en: { translation: en }, ar: { translation: ar } };
 
 export const M = createMessageKeys(en);
 export type AppMessageKey = TranslationKey<typeof en>;
+export type AppMessage = Message<typeof en>;
 
 export function createAppI18n(locale: Locale) {
   return createI18n({ resources, lng: locale });

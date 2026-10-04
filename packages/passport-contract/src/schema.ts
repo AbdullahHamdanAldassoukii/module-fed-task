@@ -60,11 +60,11 @@ export function parsePassportFormState(input: unknown): ParseResult<PassportForm
   return toResult(formStateSchema.safeParse(input));
 }
 
-export const EMPTY_PASSPORT_DRAFT: PassportDraft = {
+export const EMPTY_PASSPORT_DRAFT: Readonly<PassportDraft> = Object.freeze({
   passportNumber: '',
   firstName: '',
   lastName: '',
   issueDate: '',
   expiryDate: '',
   document: null,
-};
+});

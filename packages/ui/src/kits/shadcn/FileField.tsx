@@ -1,11 +1,11 @@
 import { cn } from 'cn';
 import { CloudUploadIcon, FileTextIcon, ImageIcon } from 'lucide-react';
-import { useEffect, useRef } from 'react';
-import { useDropzone } from 'react-dropzone';
+import { useRef } from 'react';
 import type { FileFieldFile, FileFieldProps } from '../../api';
 import { formatBytes } from '../../shared/formatBytes';
+import { useFileFieldBehavior } from '../../shared/useFileFieldBehavior';
 import { Button } from './components/ui/button';
-import { FieldShell, fieldAria, fieldLabelId } from './FieldShell';
+import { FieldShell } from './FieldShell';
 import { Progress } from './Progress';
 
 function FileThumbnail({ file }: { file: FileFieldFile }) {
@@ -18,61 +18,11 @@ function FileThumbnail({ file }: { file: FileFieldFile }) {
   return <Icon aria-hidden="true" className="size-8 shrink-0 text-muted-foreground" />;
 }
 
-export function FileField({
-  id,
-  label,
-  description,
-  error,
-  required,
-  disabled,
-  accept,
-  onFilesSelected,
-  file,
-  onRemove,
-  labels,
-  busyLabel,
-}: FileFieldProps) {
-  const inputId = `${id}-input`;
-  const isDisabled = Boolean(disabled) || Boolean(busyLabel);
+export function FileField(props: FileFieldProps) {
+  const { id, label, description, error, required, file, onRemove, labels, busyLabel } = props;
   const chooseRef = useRef<HTMLButtonElement>(null);
   const replaceRef = useRef<HTMLButtonElement>(null);
-  // Set by Choose file, Replace and Remove: what they start hides or disables the focused button.
-  const keepFocus = useRef(false);
-  const aria = fieldAria(id, { description, error, required });
-  // The keyboard reaches the buttons, not the file input, so the label, hint and error describe
-  // them as well. aria-required is not allowed on a button; it stays on the input.
-  const buttonAria = {
-    'aria-describedby': [fieldLabelId(id), aria['aria-describedby']].filter(Boolean).join(' '),
-    'aria-invalid': aria['aria-invalid'],
-  };
-  const { getRootProps, getInputProps, open, isDragActive, rootRef } = useDropzone({
-    multiple: false,
-    noClick: true,
-    noKeyboard: true,
-    disabled: isDisabled,
-    // Everything offered goes to the form, accepted or not: it owns the count and type rules.
-    onDrop: (accepted, rejected) => {
-      const all = [...accepted, ...rejected.map((rejection) => rejection.file)];
-      if (all.length > 0) onFilesSelected(all);
-    },
-  });
-
-  // A picked file swaps Choose file for the file chip, Remove swaps it back, and reading a file
-  // disables the buttons: focus falls to the page. Once the field is usable again, carry on from
-  // the button it now shows, unless the user has moved elsewhere in the meantime.
-  useEffect(() => {
-    if (isDisabled || !keepFocus.current) return;
-    keepFocus.current = false;
-    const active = document.activeElement;
-    const movedOn = active && active !== document.body && !rootRef.current?.contains(active);
-    if (movedOn) return;
-    (file ? replaceRef : chooseRef).current?.focus();
-  }, [file, isDisabled, rootRef]);
-
-  const pickFile = () => {
-    keepFocus.current = true;
-    open();
-  };
+  const field = useFileFieldBehavior(props, { choose: chooseRef, replace: replaceRef });
 
   return (
     <FieldShell
@@ -81,32 +31,30 @@ export function FileField({
       description={description}
       error={error}
       required={required}
-      labelFor={inputId}
+      labelFor={field.inputId}
     >
       <div
-        {...getRootProps({
-          'data-testid': 'file-dropzone',
+        {...field.rootProps({
           className: cn(
             'relative flex flex-col items-center gap-3 rounded-lg border border-dashed border-input p-4 text-center transition-colors',
-            isDragActive && 'border-primary bg-accent',
+            field.isDragActive && 'border-primary bg-accent',
             error && 'border-destructive',
-            isDisabled && 'opacity-60',
+            field.isDisabled && 'opacity-60',
           ),
         })}
       >
         <input
-          {...getInputProps({
-            id: inputId,
-            accept: accept.join(','),
-            disabled: isDisabled,
-            // The visible label names the input; react-dropzone's default aria-label would replace it.
-            'aria-label': undefined,
+          {...field.inputProps({
             // sr-only keeps the input out of the layout; react-dropzone's own style is a 0×0 block.
             className: 'sr-only',
             style: undefined,
-            ...aria,
           })}
         />
+        {required ? (
+          <span id={field.requiredId} hidden>
+            {labels.required}
+          </span>
+        ) : null}
         {file ? (
           <div className="flex w-full items-center gap-3 text-start">
             <FileThumbnail file={file} />
@@ -124,9 +72,9 @@ export function FileField({
               type="button"
               variant="outline"
               size="sm"
-              onClick={pickFile}
-              disabled={isDisabled}
-              {...buttonAria}
+              onClick={field.pickFile}
+              disabled={field.isDisabled}
+              {...field.buttonAria}
             >
               {labels.replace}
             </Button>
@@ -135,11 +83,8 @@ export function FileField({
                 type="button"
                 variant="ghost"
                 size="sm"
-                onClick={() => {
-                  keepFocus.current = true;
-                  onRemove();
-                }}
-                disabled={isDisabled}
+                onClick={field.removeFile}
+                disabled={field.isDisabled}
               >
                 {labels.remove}
               </Button>
@@ -154,9 +99,9 @@ export function FileField({
               type="button"
               variant="outline"
               size="sm"
-              onClick={pickFile}
-              disabled={isDisabled}
-              {...buttonAria}
+              onClick={field.pickFile}
+              disabled={field.isDisabled}
+              {...field.buttonAria}
             >
               {labels.choose}
             </Button>

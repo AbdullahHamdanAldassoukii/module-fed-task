@@ -8,13 +8,14 @@ import {
   useContext,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
   type ComponentPropsWithoutRef,
   type FocusEvent,
   type Ref,
 } from 'react';
-import type { DateFieldProps } from '../../api';
+import type { DateFieldProps, DatePlaceholder } from '../../api';
 import { fromIsoDate, toIsoDate } from '../../shared/dateText';
 import { useElementRef } from '../../shared/element-ref';
 import { dayjsLocaleFor, registerDayjsLocales } from './dayjsLocale';
@@ -27,26 +28,15 @@ registerDayjsLocales();
 
 const FORMAT = 'YYYY-MM-DD';
 
-/** A complete, real YYYY-MM-DD as MUI's value; anything else is no date. */
 function toDayjs(value: string | undefined): Dayjs | null {
   const date = value ? toIsoDate(value) : null;
   return date ? dayjs(date) : null;
 }
 
-/** Receives the text the field shows. */
 const ShownTextContext = createContext<(text: string) => void>(() => undefined);
 
 type HiddenInputProps = ComponentPropsWithoutRef<'input'> & { ownerState?: unknown };
 
-/**
- * MUI's hidden input holds the text the field shows ('' while every part is empty). MUI reports
- * no change while an empty field is only partly typed, so this input reports its text instead.
- *
- * It is also the element `inputRef` gets. MUI moves focus from it to the first date part only
- * when the field was not focused yet; focused again (a form focuses its first invalid field twice),
- * focus would stay on this input, which screen readers skip and which takes no typing. So focus
- * moves on to the first part every time, at once.
- */
 const ReportingHiddenInput = forwardRef<HTMLInputElement, HiddenInputProps>(
   function ReportingHiddenInput({ value, style, onFocus, ownerState: _ownerState, ...props }, ref) {
     const report = useContext(ShownTextContext);
@@ -61,9 +51,6 @@ const ReportingHiddenInput = forwardRef<HTMLInputElement, HiddenInputProps>(
         ?.querySelector<HTMLElement>('[role="spinbutton"]');
       if (!firstPart) return;
       firstPart.focus();
-      // Focusing this input took the page selection out of the part. MUI selects a part's text
-      // again only when its own state changes, which it does not when the field was focused
-      // already; Chrome then keeps a bare caret there, and the first digit typed is lost.
       const range = document.createRange();
       range.selectNodeContents(firstPart);
       const selection = document.getSelection();
@@ -83,13 +70,9 @@ const ReportingHiddenInput = forwardRef<HTMLInputElement, HiddenInputProps>(
 );
 
 interface Shown {
-  /** MUI's value: a date, an invalid date while a typed one is incomplete, or none. */
   date: Dayjs | null;
-  /** The text the field shows. */
   text: string;
-  /** The value the parent last gave. */
   value: string;
-  /** A new one rebuilds the field (see below). */
   generation: number;
 }
 
@@ -113,19 +96,16 @@ export function DateField({
   max,
   name,
   openCalendarLabel,
+  placeholder,
   inputRef,
 }: DateFieldProps) {
   const calendarId = `${id}-calendar`;
   const [shown, setShown] = useState(() => shownFor(value, 0));
-  // A new value from the parent (a reset, a restore) replaces what the field shows. The text the
-  // field already shows, echoed back, does not: an incomplete date stays on screen.
   if (shown.value !== value) {
     if (value === shown.text) {
       setShown({ ...shown, value });
     } else {
       const next = shownFor(value, shown.generation);
-      // MUI rebuilds its parts when its value changes. No date replacing no date is no change
-      // to MUI, so typed parts would stay: a new field is built instead.
       if (next.date === null && shown.date === null && shown.text !== '') next.generation += 1;
       setShown(next);
     }
@@ -135,16 +115,12 @@ export function DateField({
   useLayoutEffect(() => {
     latest.current = { text: shown.text, onChange };
   });
-  // Stable, so the hidden input reports only when its text changes.
   const [reportText] = useState(() => (text: string) => {
     if (text === latest.current.text) return;
     setShown((previous) => ({ ...previous, text }));
-    // '' | YYYY-MM-DD | the incomplete text as shown (e.g. 2024-MM-DD); the form decides.
     latest.current.onChange(text);
   });
 
-  // The field, its calendar button and the open calendar are one field: moving between them is
-  // not leaving it. The calendar is found by id: MUI focuses a day before React sets its refs.
   const handleBlur = (event: FocusEvent<HTMLDivElement>) => {
     const next = event.relatedTarget;
     const calendar = document.getElementById(calendarId);
@@ -156,6 +132,7 @@ export function DateField({
     <FieldShell id={id} label={label} description={description} error={error} required={required}>
       <ShownTextContext.Provider value={reportText}>
         <div onBlur={handleBlur}>
+          {/* MUI retains date parts when an empty value is reset. */}
           <DatePickerField
             key={shown.generation}
             id={id}
@@ -171,6 +148,7 @@ export function DateField({
             invalid={Boolean(error)}
             aria={fieldAria(id, { description, error, required })}
             openCalendarLabel={openCalendarLabel}
+            placeholder={placeholder}
             calendarId={calendarId}
             inputRef={inputRef}
           />
@@ -192,11 +170,11 @@ interface DatePickerFieldProps {
   invalid: boolean;
   aria: ReturnType<typeof fieldAria>;
   openCalendarLabel: string;
+  placeholder: DatePlaceholder;
   calendarId: string;
   inputRef: Ref<HTMLElement> | undefined;
 }
 
-/** MUI's date picker in the field's locale, wired to its label, hint, error and popup container. */
 function DatePickerField({
   id,
   name,
@@ -209,19 +187,22 @@ function DatePickerField({
   invalid,
   aria,
   openCalendarLabel,
+  placeholder,
   calendarId,
   inputRef,
 }: DatePickerFieldProps) {
   const container = usePortalContainer();
-  // The parent's ref gets MUI's hidden input, which hands focus on to the first date part (see
-  // ReportingHiddenInput). Rebuilding the field (a new key) remounts this component, so the ref
-  // follows the new input.
   const hiddenInputRef = useElementRef<HTMLInputElement>(inputRef);
+  const { year, month, day } = placeholder;
+  const localeText = useMemo(
+    () => pickersTextFor(locale, { year, month, day }),
+    [locale, year, month, day],
+  );
   return (
     <LocalizationProvider
       dateAdapter={AdapterDayjs}
       adapterLocale={dayjsLocaleFor(locale)}
-      localeText={pickersTextFor(locale)}
+      localeText={localeText}
     >
       <DesktopDatePicker
         value={date}
@@ -240,11 +221,9 @@ function DatePickerField({
             error: invalid,
             slots: { htmlInput: ReportingHiddenInput },
             slotProps: {
-              // The group of date parts: named by the field label, described by its hint and error.
               input: {
                 'aria-labelledby': fieldLabelId(id),
                 'aria-describedby': aria['aria-describedby'],
-                // The parts are the spinbuttons that take focus.
                 slotProps: {
                   sectionContent: {
                     'aria-invalid': aria['aria-invalid'],
@@ -256,9 +235,6 @@ function DatePickerField({
           },
           openPickerButton: {
             'aria-label': openCalendarLabel,
-            // Safari does not focus a pressed button, so the field would report a blur with nowhere
-            // to go; focus stays in the field until the calendar takes it. Pressed from outside the
-            // field, the button takes focus, so MUI brings focus back to it after a pick.
             onMouseDown: (event) => {
               event.preventDefault();
               const button = event.currentTarget;

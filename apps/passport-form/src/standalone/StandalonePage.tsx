@@ -56,10 +56,16 @@ function StandaloneContent({
         style={{ maxWidth: 1100, margin: '0 auto', padding: 16, display: 'grid', gap: 16 }}
       >
         <header
-          style={{ display: 'flex', gap: 8, alignItems: 'center', justifyContent: 'space-between' }}
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 8,
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
         >
           <h1 style={{ fontSize: 20, fontWeight: 600 }}>{t(M.standalone.title)}</h1>
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             <Button variant="secondary" size="sm" onClick={onLocaleToggle}>
               {t(M.standalone.language)}: {t(LANGUAGE_NAME[locale])}
             </Button>
@@ -71,21 +77,20 @@ function StandaloneContent({
             </Button>
           </div>
         </header>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'minmax(0,1fr) minmax(280px,420px)',
-            gap: 24,
-          }}
-        >
-          <PassportForm
-            key={mountKey}
-            locale={locale}
-            colorScheme={scheme}
-            initialValue={restore}
-            onChange={onChange}
-          />
-          <StatePanel history={history} />
+
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-start', gap: 24 }}>
+          <div style={{ flex: '999 1 36rem', minWidth: 0 }}>
+            <PassportForm
+              key={mountKey}
+              locale={locale}
+              colorScheme={scheme}
+              initialValue={restore}
+              onChange={onChange}
+            />
+          </div>
+          <div style={{ flex: '1 1 20rem', minWidth: 0 }}>
+            <StatePanel history={history} />
+          </div>
         </div>
       </div>
     </UiProvider>

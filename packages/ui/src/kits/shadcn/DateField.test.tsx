@@ -16,6 +16,7 @@ const base = {
   id: 'issue',
   label: 'تاريخ الإصدار',
   openCalendarLabel: 'افتح التقويم',
+  placeholder: { year: 'سنة', month: 'شهر', day: 'يوم' },
   locale: 'ar',
 };
 
@@ -33,7 +34,6 @@ describe('shadcn DateField in Arabic', () => {
     arabic(<DateField {...base} value="2024-01-15" onChange={() => {}} />);
     await userEvent.click(screen.getByRole('button', { name: base.openCalendarLabel }));
     const grid = await screen.findByRole('grid');
-    // The header row is hidden from screen readers; each day button names its weekday in full.
     const headers = within(grid).getAllByRole('columnheader', { hidden: true });
     expect(headers.map((header) => header.textContent)).toEqual([
       'س',

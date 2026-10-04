@@ -66,6 +66,13 @@ export interface SelectFieldProps extends FieldBaseProps {
   inputRef?: Ref<HTMLElement>;
 }
 
+/** What an empty date field shows in place of each part, in the page's language (e.g. YYYY, MM, DD). */
+export interface DatePlaceholder {
+  year: string;
+  month: string;
+  day: string;
+}
+
 /**
  * value is '' | 'YYYY-MM-DD' | any other non-empty text (= invalid, the form decides).
  * Both kits emit exactly these shapes.
@@ -82,6 +89,8 @@ export interface DateFieldProps extends FieldBaseProps {
   name?: string;
   /** aria-label of the button that opens the calendar. */
   openCalendarLabel: string;
+  /** Shown while the field is empty, parts in year-month-day order. */
+  placeholder: DatePlaceholder;
   /** The focusable control (the kits render different elements), e.g. for focus-on-error. */
   inputRef?: Ref<HTMLElement>;
 }
@@ -98,6 +107,11 @@ export interface FileFieldLabels {
   drop: string;
   replace: string;
   remove: string;
+  /**
+   * Read after Choose file and Replace when the field is required: a button cannot carry
+   * aria-required, and the keyboard reaches the buttons, not the file input.
+   */
+  required: string;
 }
 
 export interface FileFieldProps extends FieldBaseProps {
@@ -108,8 +122,15 @@ export interface FileFieldProps extends FieldBaseProps {
   /** The currently chosen file (restored or fresh). */
   file?: FileFieldFile | null;
   onRemove?: () => void;
+  /** Called when focus leaves the field (not when the file picker takes the window). */
+  onBlur?: () => void;
+  /** The focusable control: Choose file, or Replace once a file is shown. */
+  inputRef?: Ref<HTMLElement>;
   labels: FileFieldLabels;
-  /** When set, shows an indeterminate progress with this label and disables the control. */
+  /**
+   * When set, shows an indeterminate progress with this label. The field stays usable: a new
+   * file replaces the one being read.
+   */
   busyLabel?: string | null;
 }
 

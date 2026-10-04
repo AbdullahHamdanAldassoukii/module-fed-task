@@ -1,0 +1,51 @@
+/* Plain CSS on the shared design tokens, so the layout is the same with either UI kit. */
+.pf-card {
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 0.25rem);
+  background-color: var(--card);
+  color: var(--card-foreground);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+}
+
+.pf-card-header {
+  display: grid;
+  gap: 0.375rem;
+}
+
+.pf-card-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.75rem;
+}
+
+.pf-card-intro {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--muted-foreground);
+}
+
+.pf-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem 1.25rem;
+  align-items: start;
+}
+
+@media (min-width: 640px) {
+  .pf-card {
+    padding: 1.75rem;
+  }
+
+  .pf-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pf-field-wide {
+    grid-column: 1 / -1;
+  }
+}

@@ -7,7 +7,6 @@ import { createRef, useState, type ReactNode } from 'react';
 import { DateField } from './DateField';
 import { UiProvider } from './UiProvider';
 
-// dayjs is shared with the host, which may turn on its digit conversion; Arabic dates stay Latin.
 dayjs.extend(preParsePostFormat);
 
 const arabicIndicDigit = /[٠-٩۰-۹]/;
@@ -23,12 +22,14 @@ const arabic = {
   id: 'issue',
   label: 'تاريخ الإصدار',
   openCalendarLabel: 'افتح التقويم',
+  placeholder: { year: 'سنة', month: 'شهر', day: 'يوم' },
   locale: 'ar',
 };
 const english = {
   id: 'issue',
   label: 'Issue date',
   openCalendarLabel: 'Open calendar',
+  placeholder: { year: 'YYYY', month: 'MM', day: 'DD' },
   locale: 'en',
 };
 
@@ -109,7 +110,6 @@ describe('MUI DateField', () => {
   it('selects the first date part each time inputRef is focused, so no typed digit is lost', async () => {
     const ref = createRef<HTMLElement>();
     renderIn('en', <DateField {...english} value="" onChange={() => {}} inputRef={ref} />);
-    // Focusing an input takes the page selection out of the date part, as Chrome does.
     ref.current?.addEventListener('focusin', () => {
       document.getSelection()?.removeAllRanges();
     });
