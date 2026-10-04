@@ -1,0 +1,34 @@
+{
+  "name": "@repo/api-mocks",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./scenarios": "./src/scenarios.ts",
+    "./browser": "./src/browser.ts",
+    "./node": "./src/node.ts"
+  },
+  "scripts": {
+    "test": "rstest run",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "serve": "tsx src/server.ts"
+  },
+  "dependencies": {
+    "@mswjs/http-middleware": "catalog:",
+    "express": "catalog:",
+    "msw": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@rstest/core": "catalog:",
+    "@types/express": "catalog:",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:"
+  }
+}
