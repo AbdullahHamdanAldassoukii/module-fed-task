@@ -23,13 +23,14 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "turbo": "catalog:",
-    "prettier": "catalog:",
-    "prettier-plugin-tailwindcss": "catalog:",
-    "husky": "catalog:",
-    "lint-staged": "catalog:",
     "@commitlint/cli": "catalog:",
     "@commitlint/config-conventional": "catalog:",
+    "eslint": "catalog:",
+    "husky": "catalog:",
+    "lint-staged": "catalog:",
+    "prettier": "catalog:",
+    "prettier-plugin-tailwindcss": "catalog:",
+    "turbo": "catalog:",
     "typescript": "catalog:"
   }
 }

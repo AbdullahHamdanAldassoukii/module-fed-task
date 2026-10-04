@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: lint · typecheck · test · build (${{ matrix.ui_kit }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ui_kit: [shadcn, mui]
+    env:
+      UI_KIT: ${{ matrix.ui_kit }}
+      TURBO_TELEMETRY_DISABLED: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm format:check
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+      - run: pnpm --filter passport-form check:css
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dist-${{ matrix.ui_kit }}
+          path: apps/*/dist
+          retention-days: 7
+
+  e2e:
+    name: e2e (shadcn)
+    runs-on: ubuntu-latest
+    needs: quality
+    env:
+      CI: 1
+      UI_KIT: shadcn
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter e2e exec playwright install --with-deps chromium
+      - run: pnpm e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: e2e/playwright-report
+          retention-days: 7
+
+  docker:
+    name: docker compose smoke (production)
+    runs-on: ubuntu-latest
+    needs: quality
+    steps:
+      - uses: actions/checkout@v4
+      - run: APP_ENV=production docker compose -f infra/docker-compose.yml up --build -d
+      - run: sleep 10 && ./infra/smoke.sh production
+      - if: always()
+        run: docker compose -f infra/docker-compose.yml down

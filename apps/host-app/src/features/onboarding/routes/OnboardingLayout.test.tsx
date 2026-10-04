@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from '@rstest/core';
+import { afterEach, describe, expect, it, rs } from '@rstest/core';
 import { act, screen } from '@testing-library/react';
 import { createMemoryRouter, type DataRouter, type RouteObject } from 'react-router';
 import type { Services } from '../../../app/createServices';
@@ -21,10 +21,18 @@ const routes: RouteObject[] = [
 ];
 
 const activeRouters: DataRouter[] = [];
+const consoleErrorSpies: { mockRestore: () => void }[] = [];
 
 afterEach(() => {
+  consoleErrorSpies.splice(0).forEach((spy) => spy.mockRestore());
   activeRouters.splice(0).forEach((router) => router.dispose());
 });
+
+function silenceExpectedConsoleError() {
+  const spy = rs.spyOn(console, 'error').mockImplementation(() => undefined);
+  consoleErrorSpies.push(spy);
+  return spy;
+}
 
 function renderLayout(route: string, locale: 'en' | 'ar' = 'en', services?: Partial<Services>) {
   const router = createMemoryRouter(routes, { initialEntries: [route] });
@@ -75,6 +83,7 @@ describe('OnboardingLayout', () => {
   });
 
   it('shows the remote fallback and keeps Next disabled when the remote is down', async () => {
+    const consoleError = silenceExpectedConsoleError();
     const loader = createPassportFormLoader({
       manifestUrl: 'http://localhost:3001/mf-manifest.json',
       logger: noopLogger,
@@ -87,5 +96,8 @@ describe('OnboardingLayout', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent("The passport form couldn't load");
     expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
+    expect(consoleError.mock.calls.flat()).toContainEqual(
+      expect.objectContaining({ name: 'RemoteLoadError', reason: 'load-failed' }),
+    );
   });
 });

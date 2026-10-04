@@ -22,12 +22,20 @@ import { createPassportFormLoader } from './loader';
 import { PassportFormSlot } from './PassportFormSlot';
 
 const manifestUrl = 'http://localhost:3001/mf-manifest.json';
+const consoleErrorSpies: { mockRestore: () => void }[] = [];
 
 afterEach(() => {
+  consoleErrorSpies.splice(0).forEach((spy) => spy.mockRestore());
   rs.useRealTimers();
   devPanel.close();
   devScenarios.reset();
 });
+
+function silenceExpectedConsoleError() {
+  const spy = rs.spyOn(console, 'error').mockImplementation(() => undefined);
+  consoleErrorSpies.push(spy);
+  return spy;
+}
 
 function StatefulHarness({
   onChange = () => undefined,
@@ -187,6 +195,7 @@ describe('PassportFormSlot', () => {
   });
 
   it('shows the unavailable fallback after a remote hangs for fifteen seconds and recovers on retry', async () => {
+    const consoleError = silenceExpectedConsoleError();
     rs.useFakeTimers();
     let attempts = 0;
     const reregister = rs.fn();
@@ -210,9 +219,13 @@ describe('PassportFormSlot', () => {
     await user.click(screen.getByRole('button', { name: 'حاول مرة أخرى' }));
     expect(await screen.findByTestId('fake-remote')).toBeInTheDocument();
     expect(reregister).toHaveBeenCalledWith(manifestUrl);
+    expect(consoleError.mock.calls.flat()).toContainEqual(
+      expect.objectContaining({ name: 'RemoteLoadError', reason: 'timeout' }),
+    );
   });
 
   it('load failure shows the fallback and Try again reloads it', async () => {
+    const consoleError = silenceExpectedConsoleError();
     let attempts = 0;
     const user = userEvent.setup();
     const reregister = rs.fn();
@@ -239,9 +252,13 @@ describe('PassportFormSlot', () => {
     expect(attempts).toBe(2);
     expect(reregister).toHaveBeenCalledWith(manifestUrl);
     expect(events).toEqual(['remote.load_failed']);
+    expect(consoleError.mock.calls.flat()).toContainEqual(
+      expect.objectContaining({ name: 'RemoteLoadError', reason: 'load-failed' }),
+    );
   });
 
   it('treats an incompatible module version as unavailable without a duplicate render log', async () => {
+    const consoleError = silenceExpectedConsoleError();
     const events: string[] = [];
     const logger: Logger = {
       ...noopLogger,
@@ -257,6 +274,9 @@ describe('PassportFormSlot', () => {
       'نموذج جواز السفر غير متوافق مع هذا الإصدار من التطبيق.',
     );
     expect(events).toEqual(['remote.contract_mismatch']);
+    expect(consoleError.mock.calls.flat()).toContainEqual(
+      expect.objectContaining({ name: 'RemoteContractError' }),
+    );
   });
 
   it('forwards malformed onChange payloads as invalid with the last draft', async () => {
@@ -272,6 +292,7 @@ describe('PassportFormSlot', () => {
   });
 
   it('isolates a remote crash and Try again remounts with the latest draft', async () => {
+    const consoleError = silenceExpectedConsoleError();
     const user = userEvent.setup();
     const reregister = rs.fn();
     renderSlot(async () => fakeModule(), undefined, { reregister });
@@ -283,9 +304,13 @@ describe('PassportFormSlot', () => {
     await user.click(screen.getByRole('button', { name: 'حاول مرة أخرى' }));
     expect(await screen.findByLabelText('First name')).toHaveValue('Alice');
     expect(reregister).not.toHaveBeenCalled();
+    expect(consoleError.mock.calls.flat()).toContainEqual(
+      expect.objectContaining({ message: 'remote crashed' }),
+    );
   });
 
   it('reloads a loaded form for Down and recovers after Normal and Try again', async () => {
+    const consoleError = silenceExpectedConsoleError();
     const user = userEvent.setup();
     renderSlot(
       async () => {
@@ -304,5 +329,8 @@ describe('PassportFormSlot', () => {
     await user.click(screen.getByRole('radio', { name: 'Normal' }));
     await user.click(screen.getByRole('button', { name: 'Try again' }));
     expect(await screen.findByTestId('fake-remote')).toBeInTheDocument();
+    expect(consoleError.mock.calls.flat()).toContainEqual(
+      expect.objectContaining({ name: 'RemoteLoadError', reason: 'load-failed' }),
+    );
   });
 });

@@ -25,10 +25,18 @@ import { RouteErrorPage } from './RouteErrorPage';
 import { noopLogger } from '../lib/logger';
 
 const activeRouters: ReturnType<typeof createMemoryRouter>[] = [];
+const consoleErrorSpies: { mockRestore: () => void }[] = [];
 
 afterEach(() => {
+  consoleErrorSpies.splice(0).forEach((spy) => spy.mockRestore());
   activeRouters.splice(0).forEach((router) => router.dispose());
 });
+
+function silenceExpectedConsoleError() {
+  const spy = rs.spyOn(console, 'error').mockImplementation(() => undefined);
+  consoleErrorSpies.push(spy);
+  return spy;
+}
 
 function renderRoutes(routeObjects: RouteObject[], initialEntry: string, services?: Services) {
   const testServices = services ?? fakeServices();
@@ -149,6 +157,7 @@ describe('host routes', () => {
   });
 
   it('uses the root error element when a lazy route fails', async () => {
+    const consoleError = silenceExpectedConsoleError();
     const root = routes[0]! as NonIndexRouteObject;
     const user = userEvent.setup();
     const logger = { ...noopLogger, error: rs.fn() };
@@ -177,6 +186,7 @@ describe('host routes', () => {
     expect(logger.error).toHaveBeenCalledTimes(1);
     expect(screen.getAllByText('Something went wrong')).toHaveLength(1);
     expect(document.title).toBe('Something went wrong · Passport Wizard');
+    expect(consoleError).not.toHaveBeenCalled();
   });
 
   it('keeps wizard state while Next and Back use the step URLs', async () => {

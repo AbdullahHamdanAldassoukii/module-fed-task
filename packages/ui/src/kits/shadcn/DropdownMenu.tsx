@@ -12,7 +12,7 @@ import {
 export function DropdownMenu({ triggerLabel, triggerIcon, ariaLabel, items }: DropdownMenuProps) {
   const selected = items.find((item) => item.selected)?.id ?? '';
   return (
-    <Root>
+    <Root modal={false}>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="sm" aria-label={ariaLabel}>
           {triggerIcon}

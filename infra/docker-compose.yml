@@ -1,0 +1,31 @@
+name: passport-wizard
+
+services:
+  host-app:
+    build:
+      context: ..
+      dockerfile: infra/host-app.Dockerfile
+      args:
+        UI_KIT: ${UI_KIT:-shadcn}
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+    ports: ['3000:3000']
+    depends_on: [passport-form, mock-api]
+  passport-form:
+    build:
+      context: ..
+      dockerfile: infra/passport-form.Dockerfile
+      args:
+        UI_KIT: ${UI_KIT:-shadcn}
+    ports: ['3001:3001']
+  mock-api:
+    build:
+      context: ..
+      dockerfile: infra/mock-api.Dockerfile
+    init: true
+    ports: ['3002:3002']
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:3002/health']
+      interval: 10s
+      timeout: 3s
+      retries: 5

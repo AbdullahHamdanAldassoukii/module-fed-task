@@ -55,6 +55,9 @@ export default defineConfig({
     },
   },
   server: { port: 3001, strictPort: true, cors: { origin: ['http://localhost:3000'] } },
+  dev: {
+    browserLogs: process.env.BROWSER_LOGS !== 'off',
+  },
   output: { assetPrefix: 'auto', distPath: { root: 'dist' } },
   tools:
     process.env.RSDOCTOR === 'true'

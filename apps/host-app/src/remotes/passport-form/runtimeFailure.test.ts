@@ -1,9 +1,22 @@
-import { describe, expect, it, rs } from '@rstest/core';
+import { afterEach, describe, expect, it, rs } from '@rstest/core';
 import { waitFor } from '@testing-library/react';
 import { createInstance } from '@module-federation/enhanced/runtime';
 
+const consoleWarnSpies: { mockRestore: () => void }[] = [];
+
+afterEach(() => {
+  consoleWarnSpies.splice(0).forEach((spy) => spy.mockRestore());
+});
+
+function silenceExpectedConsoleWarn() {
+  const spy = rs.spyOn(console, 'warn').mockImplementation(() => undefined);
+  consoleWarnSpies.push(spy);
+  return spy;
+}
+
 describe('Federation runtime load failures', () => {
   it('does not cache a rejected manifest fetch', async () => {
+    const consoleWarn = silenceExpectedConsoleWarn();
     const manifestUrl = 'http://127.0.0.1:9/mf-manifest.json';
     const fetch = rs
       .spyOn(globalThis, 'fetch')
@@ -26,12 +39,14 @@ describe('Federation runtime load failures', () => {
 
       await instance.loadRemote('unreachable_remote/PassportForm').catch(() => undefined);
       expect(fetch).toHaveBeenCalledTimes(2);
+      expect(consoleWarn).toHaveBeenCalledTimes(2);
     } finally {
       fetch.mockRestore();
     }
   });
 
   it('keeps a hanging manifest fetch until force registration clears it', async () => {
+    const consoleWarn = silenceExpectedConsoleWarn();
     const manifestUrl = 'http://127.0.0.1:9/mf-manifest.json';
     const fetch = rs
       .spyOn(globalThis, 'fetch')
@@ -54,6 +69,7 @@ describe('Federation runtime load failures', () => {
       });
       void instance.loadRemote('hanging_remote/PassportForm').catch(() => undefined);
       await waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
+      expect(consoleWarn).toHaveBeenCalledTimes(1);
     } finally {
       fetch.mockRestore();
     }

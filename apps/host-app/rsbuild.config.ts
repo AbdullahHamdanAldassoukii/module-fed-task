@@ -37,6 +37,8 @@ export default defineConfig({
       name: 'host_app',
       remotes: { passport_form: `passport_form@${REMOTE_MANIFEST_URL}` },
       shared: sharedDeps(UI_KIT),
+      // Lazy remotes keep an unavailable remote from blocking the host.
+      shareStrategy: 'loaded-first',
       runtimePlugins: [path.resolve(import.meta.dirname, 'src/remotes/runtime/retryPlugin.ts')],
       dts: false,
     }),
@@ -72,6 +74,9 @@ export default defineConfig({
         response.end(fs.readFileSync(path.resolve(import.meta.dirname, `config/${APP_ENV}.json`)));
       });
     },
+  },
+  dev: {
+    browserLogs: process.env.BROWSER_LOGS !== 'off',
   },
   output: { distPath: { root: 'dist' } },
 });
