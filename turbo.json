@@ -1,6 +1,6 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalEnv": ["UI_KIT", "APP_ENV", "CI"],
+  "globalEnv": ["UI_KIT", "APP_ENV", "RSDOCTOR", "CI"],
   "tasks": {
     "build": { "dependsOn": ["^build"], "outputs": ["dist/**"], "env": ["UI_KIT"] },
     "dev": { "cache": false, "persistent": true },

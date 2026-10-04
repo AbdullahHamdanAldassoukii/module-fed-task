@@ -1,0 +1,71 @@
+{
+  "app": { "title": "Passport Wizard", "skipToContent": "Skip to content", "loading": "Loading…" },
+  "header": { "language": "Language", "theme": "Theme", "preferences": "Preferences" },
+  "theme": { "light": "Light", "dark": "Dark", "system": "System" },
+  "env": { "development": "DEV", "qa": "QA" },
+  "steps": {
+    "passport": "Passport",
+    "idInfo": "ID info",
+    "progress": "Progress",
+    "status": { "complete": "complete", "current": "current", "upcoming": "upcoming" }
+  },
+  "wizard": {
+    "next": "Next",
+    "back": "Back",
+    "submit": "Submit",
+    "completeHint": "Complete all fields to continue",
+    "passportPlaceholder": "Your passport details will be collected here.",
+    "idInfoPlaceholder": "Your ID information will be collected here.",
+    "stepOf": "Step {{current}} of {{total}}"
+  },
+  "remote": {
+    "loading": "Loading passport form…",
+    "stillLoading": "Still loading…",
+    "unavailableTitle": "The passport form couldn't load",
+    "unavailable": "Please try again. Your information is kept.",
+    "tryAgain": "Try again"
+  },
+  "errors": {
+    "network": "We couldn't reach the server. Check your connection and try again.",
+    "timeout": "The server took too long to respond.",
+    "server": "The server had a problem handling your request.",
+    "validation": "Some information needs to be corrected.",
+    "unexpectedResponse": "We received an unexpected response from the server.",
+    "remoteUnavailable": "The passport form is unavailable right now.",
+    "remoteIncompatible": "The passport form is not compatible with this version of the app.",
+    "config": "The application is not configured correctly.",
+    "cancelled": "The request was cancelled.",
+    "unknown": "Something went wrong.",
+    "requestId": "Reference: {{id}}",
+    "crashTitle": "Something went wrong",
+    "crashBody": "Please reload the page. If the problem continues, contact support.",
+    "reload": "Reload"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "The page you asked for does not exist.",
+    "home": "Go to the start"
+  },
+  "devPanel": {
+    "open": "Developer panel",
+    "close": "Close developer panel",
+    "title": "Developer panel",
+    "apiScenario": "API scenario",
+    "remoteScenario": "Remote scenario",
+    "reset": "Reset",
+    "scenarios": {
+      "success": "Success",
+      "slow": "Slow (3 s)",
+      "timeout": "Timeout",
+      "server-error": "Server error (500)",
+      "network-error": "Network error",
+      "validation-error": "Field rejected (422)"
+    },
+    "remote": {
+      "normal": "Normal",
+      "down": "Down",
+      "slow": "Slow (5 s)",
+      "mismatch": "Contract mismatch"
+    }
+  }
+}

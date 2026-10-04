@@ -7,18 +7,26 @@ Shared flat ESLint config for the workspace.
 - `appBoundaries({ srcDir, rootDir })`: the architecture rules for an app. It covers the
   layer graph, the ban on imports between features, the home of each third-party library,
   and the ban on browser globals outside their wrappers.
+- `translationKeyGuard`: blocks literal and template-literal keys passed to `t()`, including
+  member calls such as `translations.t('header.title')`.
 
 Usage in an app:
 
 ```js
-import { base, react, appBoundaries } from '@repo/eslint-config';
+import { base, react, appBoundaries, translationKeyGuard } from '@repo/eslint-config';
 
 export default [
   ...base,
   ...react,
+  ...translationKeyGuard,
   ...appBoundaries({ srcDir: 'src', rootDir: import.meta.dirname }),
 ];
 ```
+
+Translation calls use key constants created by `createMessageKeys`, for example
+`t(M.header.title)`. This guard intentionally rejects `t('header.title')` and
+`t(`header.${section}`)`. Add any app-specific `no-restricted-syntax` selectors to the
+shared guard so its rule options remain in one flat-config block.
 
 `rootDir` defaults to the working directory, which is right for `pnpm lint`. Pass the app
 folder so the rules also classify files correctly when ESLint runs from the repo root, for

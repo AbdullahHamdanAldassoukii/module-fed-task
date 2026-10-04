@@ -1,0 +1,28 @@
+html {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+.host-skip-link {
+  background: #18181b;
+  color: #fff;
+  padding: 8px 12px;
+  transform: translateY(-150%);
+  z-index: 100;
+}
+
+.host-skip-link:focus {
+  transform: translateY(0);
+}
+
+.host-dev-panel {
+  background: #fff;
+  border-inline-start: 1px solid #d4d4d8;
+  box-shadow: 0 0 24px rgb(0 0 0 / 15%);
+  color: #18181b;
+}
+
+.dark .host-dev-panel {
+  background: #18181b;
+  border-color: #52525b;
+  color: #fafafa;
+}

@@ -6,18 +6,15 @@ export interface CreateI18nOptions {
   lng: Locale;
 }
 
-/**
- * A fresh, isolated i18next instance. Never the global one: the host and the
- * remote each own theirs, so one can never change the other's language.
- */
 export function createI18n({ resources, lng }: CreateI18nOptions): i18n {
+  // Host and remote languages must not share a global instance.
   const instance = i18next.createInstance();
   void instance.init({
     resources,
     lng,
     fallbackLng: 'en',
     supportedLngs: SUPPORTED_LOCALES,
-    initAsync: false, // synchronous init: resources are inline
+    initAsync: false,
     interpolation: { escapeValue: false },
     returnNull: false,
   });

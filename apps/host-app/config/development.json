@@ -1,0 +1,7 @@
+{
+  "env": "development",
+  "api": { "baseUrl": "/api", "timeoutMs": 10000 },
+  "remotes": { "passportForm": { "manifestUrl": "http://localhost:3001/mf-manifest.json" } },
+  "logging": { "level": "debug" },
+  "features": { "devPanel": true, "browserMocks": true }
+}

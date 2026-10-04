@@ -1,0 +1,7 @@
+{
+  "env": "production",
+  "api": { "baseUrl": "http://localhost:3002/api", "timeoutMs": 10000 },
+  "remotes": { "passportForm": { "manifestUrl": "http://localhost:3001/mf-manifest.json" } },
+  "logging": { "level": "warn" },
+  "features": { "devPanel": false, "browserMocks": false }
+}

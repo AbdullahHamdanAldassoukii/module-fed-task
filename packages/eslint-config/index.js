@@ -8,6 +8,33 @@ import { react } from './react.js';
 
 const TEST_FILES = ['**/*.test.{ts,tsx}', '**/testing/**'];
 
+export const translationKeyGuard = [
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'CallExpression[callee.name="t"][arguments.0.type="Literal"]',
+          message: 'Pass a message key constant to t(), not a string literal.',
+        },
+        {
+          selector: 'CallExpression[callee.name="t"][arguments.0.type="TemplateLiteral"]',
+          message: 'Pass a message key constant to t(), not a template literal.',
+        },
+        {
+          selector: 'CallExpression[callee.property.name="t"][arguments.0.type="Literal"]',
+          message: 'Pass a message key constant to t(), not a string literal.',
+        },
+        {
+          selector: 'CallExpression[callee.property.name="t"][arguments.0.type="TemplateLiteral"]',
+          message: 'Pass a message key constant to t(), not a template literal.',
+        },
+      ],
+    },
+  },
+];
+
 export const base = defineConfig(
   {
     ignores: [
@@ -26,9 +53,8 @@ export const base = defineConfig(
     },
     plugins: { 'import-x': importX },
     rules: {
+      // Inline type imports can still load a module at runtime.
       '@typescript-eslint/consistent-type-imports': ['error', { fixStyle: 'inline-type-imports' }],
-      // With verbatimModuleSyntax, `import { type A }` still loads the module at runtime,
-      // and the boundary rules only see a type-only import when it is `import type`.
       '@typescript-eslint/no-import-type-side-effects': 'error',
       '@typescript-eslint/no-unused-vars': [
         'error',
@@ -54,7 +80,6 @@ export const base = defineConfig(
     },
   },
   {
-    // The design-token build script reports what it wrote.
     files: ['src/tokens/**'],
     rules: { 'no-console': 'off' },
   },
