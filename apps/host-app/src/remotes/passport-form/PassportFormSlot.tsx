@@ -32,11 +32,6 @@ interface ModuleLoader {
 }
 type LazyRemote = LazyExoticComponent<PassportFormModule['default']>;
 
-/**
- * One React.lazy per loader, shared by every mount of the slot: once resolved it renders at
- * once, so going Back to Step 1 shows the form without a skeleton flash. A failed load drops
- * its entry, so the next mount or Try again loads again.
- */
 const lazyRemotes = new WeakMap<ModuleLoader, { revision: number; component: LazyRemote }>();
 
 function lazyRemoteFor(loader: ModuleLoader, revision: number): LazyRemote {
@@ -58,7 +53,6 @@ function lazyRemoteFor(loader: ModuleLoader, revision: number): LazyRemote {
 
 export type PassportFocusTarget = 'firstField' | keyof PassportData;
 
-/** The remote's field ids, part of what its team publishes alongside the contract. */
 const FIELD_ID = {
   passportNumber: 'pf-passport-number',
   firstName: 'pf-first-name',
@@ -79,8 +73,8 @@ function focusField(container: HTMLElement, target: PassportFocusTarget) {
   const element = container.querySelector<HTMLElement>(`#${FIELD_ID[target]}`);
   element?.focus();
   if (!element || document.activeElement === element) return;
-  // A kit may put the id on a hidden input; focus the visible control of the same field.
   for (let scope = element.parentElement; scope && scope !== container;) {
+    // Some kits put the id on a hidden input.
     const control = scope.querySelector<HTMLElement>(FOCUSABLE);
     if (control) {
       control.focus();
@@ -90,7 +84,6 @@ function focusField(container: HTMLElement, target: PassportFocusTarget) {
   }
 }
 
-/** Rendered next to the remote, so its effect runs once the remote's fields exist. */
 function FocusOnMount({
   containerRef,
   target,
@@ -99,7 +92,6 @@ function FocusOnMount({
   target: PassportFocusTarget;
 }) {
   useEffect(() => {
-    // After the page's own focus handling (the step heading) has run.
     const frame = requestAnimationFrame(() => {
       if (containerRef.current) focusField(containerRef.current, target);
     });
@@ -137,7 +129,6 @@ export interface PassportFormSlotProps {
   onChange: (state: PassportFormState) => void;
   locale: PassportFormLocale;
   colorScheme: PassportFormColorScheme;
-  /** Moves focus to a field once the form has rendered (after starting over, or to fix a value). */
   focusOnMount?: PassportFocusTarget;
 }
 
@@ -178,7 +169,6 @@ export function PassportFormSlot({
     },
     [guard],
   );
-  // Looked up on every render: after a failed load, Try again re-renders and gets a fresh one.
   const Remote = lazyRemoteFor(remotes.passportForm, scenarioRevision);
   const retry = useCallback(
     (error: unknown) => {
@@ -191,6 +181,7 @@ export function PassportFormSlot({
   return (
     <ErrorBoundary
       key={attempt}
+      resetKeys={[scenarioRevision]}
       fallbackRender={({ error }) => (
         <RemoteUnavailable error={error} onRetry={() => retry(error)} />
       )}
@@ -202,7 +193,7 @@ export function PassportFormSlot({
     >
       <div ref={containerRef}>
         <Suspense fallback={<LoadingSlot />}>
-          {/* eslint-disable-next-line react-hooks/static-components -- one lazy component per loader, cached outside render; retry must replace a rejected one. */}
+          {/* eslint-disable-next-line react-hooks/static-components -- cached remote loader */}
           <Remote
             colorScheme={colorScheme}
             initialValue={value}

@@ -3,6 +3,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 import FormLabel from '@mui/material/FormLabel';
 import type { ReactNode } from 'react';
 import { fieldLabelId } from '../../shared/fieldAria';
+import { visuallyHidden } from './VisuallyHidden';
 
 export { fieldAria, fieldLabelId } from '../../shared/fieldAria';
 
@@ -31,7 +32,6 @@ export function FieldShell({
         id={fieldLabelId(id)}
         htmlFor={labelFor}
         required={required}
-        // The date field has its own form control, so focus would color only some labels.
         sx={{
           fontSize: 14,
           fontWeight: 500,
@@ -48,8 +48,12 @@ export function FieldShell({
         </FormHelperText>
       ) : null}
       {children}
-      {/* Always rendered, so aria-describedby never points at a missing id. */}
-      <FormHelperText id={`${id}-error`} aria-live="polite" sx={{ m: 0, minHeight: 16 }}>
+
+      <FormHelperText
+        id={`${id}-error`}
+        aria-live="polite"
+        sx={error ? { m: 0, minHeight: 16 } : visuallyHidden}
+      >
         {error ?? ''}
       </FormHelperText>
     </FormControl>

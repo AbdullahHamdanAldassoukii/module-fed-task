@@ -1,5 +1,4 @@
 #!/bin/sh
-# Verifies the running compose stack: config env, remote manifest with CORS, mock API, cache headers.
 set -eu
 
 fail() {
@@ -18,6 +17,14 @@ curl -sfI -H 'Origin: http://localhost:3000' http://localhost:3001/mf-manifest.j
 echo "  ok cors"
 curl -sfI http://localhost:3001/mf-manifest.json | grep -qi 'cache-control: no-cache' || fail "remote manifest cache-control"
 echo "  ok no-cache on manifest"
+
+curl -sfI -H 'Origin: http://localhost:3000' http://localhost:3001/mf-manifest.json | grep -qi '^vary: .*origin' || fail "remote manifest Vary: Origin"
+echo "  ok vary"
+
+echo "host image:"
+status=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/mockServiceWorker.js)
+[ "$status" = "404" ] || fail "mockServiceWorker.js is served (HTTP $status)"
+echo "  ok no mock service worker"
 
 echo "mock api:"
 curl -sf -X POST http://localhost:3002/api/applications -H 'content-type: application/json' -d '{"passport":{},"idInfo":{}}' | grep -q referenceId || fail "mock API submission"

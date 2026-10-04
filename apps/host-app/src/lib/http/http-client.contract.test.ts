@@ -397,5 +397,27 @@ for (const [name, makeTransport] of transports) {
       expect(seen!.headers.get('x-mock-scenario')).toBe('slow');
       expect(seen!.headers.get('x-a')).toBe('2');
     });
+
+    it('keeps its own request id and idempotency key over caller headers in any case', async () => {
+      let seen: Request | undefined;
+      server.use(
+        http.post(`${BASE}/ids`, ({ request }) => {
+          seen = request;
+          return HttpResponse.json({});
+        }),
+      );
+      await client({
+        defaultHeaders: () => ({ 'X-Request-Id': 'from-defaults', 'Idempotency-Key': 'stale' }),
+      }).send({
+        method: 'POST',
+        path: '/ids',
+        body: {},
+        idempotencyKey: 'k-own',
+        headers: { 'x-REQUEST-id': 'from-request', 'IDEMPOTENCY-KEY': 'other' },
+        parse: (data) => data,
+      });
+      expect(seen!.headers.get('x-request-id')).toBe('req-1');
+      expect(seen!.headers.get('idempotency-key')).toBe('k-own');
+    });
   });
 }

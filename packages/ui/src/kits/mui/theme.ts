@@ -1,13 +1,14 @@
 import { createTheme, type Theme } from '@mui/material/styles';
-// Types the date pickers' entries under `components`.
 import type {} from '@mui/x-date-pickers/themeAugmentation';
 import type { ColorScheme, Direction } from '../../api';
 import { fontFamily, palette, radius, spacing } from '../../tokens/tokens';
 
+const COARSE_POINTER = '@media (pointer: coarse)';
+const TOUCH_TARGET = 44;
+
 const ROOT_FONT_SIZE = 16;
 const themes = new Map<string, Theme>();
 
-/** The MUI theme for a direction and color scheme, built once from the shared design tokens. */
 export function getTheme(direction: Direction, colorScheme: ColorScheme): Theme {
   const key = `${direction}-${colorScheme}`;
   let theme = themes.get(key);
@@ -28,24 +29,34 @@ export function getTheme(direction: Direction, colorScheme: ColorScheme): Theme 
         divider: t.border,
       },
       shape: { borderRadius: parseFloat(radius) * ROOT_FONT_SIZE },
-      // MUI's spacing unit is two token steps (8px), so its built-in paddings keep their size.
       spacing: parseFloat(spacing) * ROOT_FONT_SIZE * 2,
-      // Tailwind's breakpoints, so both kits change layout at the same widths.
       breakpoints: { values: { xs: 0, sm: 640, md: 768, lg: 1024, xl: 1280 } },
       typography: { fontFamily, button: { textTransform: 'none', fontWeight: 600 } },
       components: {
-        MuiButton: { defaultProps: { disableElevation: true } },
-        // Raised surfaces keep the popover color in dark mode (no white elevation tint) and take
-        // the border token, as the shadcn kit's popovers do.
+        MuiButton: {
+          defaultProps: { disableElevation: true },
+          styleOverrides: { root: { [COARSE_POINTER]: { minHeight: TOUCH_TARGET } } },
+        },
+        MuiIconButton: {
+          styleOverrides: {
+            root: { [COARSE_POINTER]: { minHeight: TOUCH_TARGET, minWidth: TOUCH_TARGET } },
+          },
+        },
         MuiPaper: { styleOverrides: { root: { backgroundImage: 'none' } } },
         MuiPopover: { styleOverrides: { paper: { border: `1px solid ${t.border}` } } },
         MuiDialog: { styleOverrides: { paper: { border: `1px solid ${t.border}` } } },
         MuiPickerPopper: { styleOverrides: { paper: { border: `1px solid ${t.border}` } } },
         MuiOutlinedInput: {
-          styleOverrides: { notchedOutline: { borderColor: t.input } },
+          styleOverrides: {
+            root: { [COARSE_POINTER]: { minHeight: TOUCH_TARGET } },
+            notchedOutline: { borderColor: t.input },
+          },
         },
         MuiPickersOutlinedInput: {
-          styleOverrides: { notchedOutline: { borderColor: t.input } },
+          styleOverrides: {
+            root: { [COARSE_POINTER]: { minHeight: TOUCH_TARGET } },
+            notchedOutline: { borderColor: t.input },
+          },
         },
       },
     });

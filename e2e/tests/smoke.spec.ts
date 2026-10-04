@@ -7,7 +7,6 @@ interface SharedCopy {
   useIn: string[];
 }
 
-// Reads the Module Federation share scope: which copy of each package the apps ended up using.
 function loadedSharedCopies(page: Page, names: string[]): Promise<SharedCopy[]> {
   return page.evaluate((packageNames) => {
     interface ShareInfo {
@@ -26,12 +25,10 @@ function loadedSharedCopies(page: Page, names: string[]): Promise<SharedCopy[]> 
         for (const name of packageNames) {
           for (const [version, info] of Object.entries(packages[name] ?? {})) {
             if (!info.loaded) continue;
-            copies.set(`${name}@${version}`, {
-              name,
-              version,
-              from: info.from,
-              useIn: [...(info.useIn ?? [])].sort(),
-            });
+            // Key by provider so a second copy is not merged into the host's.
+            const key = `${name}@${version} from ${info.from ?? '?'}`;
+            const useIn = new Set([...(copies.get(key)?.useIn ?? []), ...(info.useIn ?? [])]);
+            copies.set(key, { name, version, from: info.from, useIn: [...useIn].sort() });
           }
         }
       }
@@ -64,7 +61,6 @@ test('host loads, renders the federated passport form, and keeps Next disabled w
   await expect(progress.locator('[aria-current="step"]')).toContainText('Passport');
   await expect(page.getByRole('heading', { level: 1, name: 'Passport' })).toBeVisible();
 
-  // The remote (served from :3001) renders this heading inside the host page.
   await remoteManifest;
   const remoteRoot = page.locator('[data-passport-form-root]');
   await expect(remoteRoot.getByRole('heading', { name: 'Passport details' })).toBeVisible();
@@ -80,7 +76,6 @@ test('host loads, renders the federated passport form, and keeps Next disabled w
 });
 
 test('host and remote share one copy of each singleton, provided by the host', async ({ page }) => {
-  // The MUI kit adds Emotion, whose style cache and theme context must also be a single copy.
   const singletons = [
     'react',
     'react-dom',
@@ -115,7 +110,6 @@ test('unknown route shows not found with a way back to the start', async ({ page
 });
 
 test('serves the UI kit this run asked for', async ({ page }) => {
-  // Guards against a reused dev server that was started with the other kit.
   const muiExpected = process.env.UI_KIT === 'mui';
   await page.goto('/onboarding/passport');
 

@@ -6,7 +6,7 @@ Feature code needs a stable way to make validated requests while transport conce
 
 ## Decision
 
-I chose a small `HttpClient` port with axios as the default transport and a fetch transport as a proof implementation. Shared core code owns URL construction, request IDs, language and idempotency headers, timeouts, response parsing, error mapping, and retry policy. A shared MSW contract suite runs against both transports.
+I chose a small `HttpClient` port with axios as the default transport and a fetch transport as a proof implementation. Shared core code owns URL construction, request IDs, language and idempotency headers, timeouts, response parsing, error mapping, and retry policy. It sets the request ID and the idempotency key after the default and per-request headers, in any letter case, so a caller cannot replace them by accident. A shared MSW contract suite runs against both transports.
 
 ## Alternatives considered
 

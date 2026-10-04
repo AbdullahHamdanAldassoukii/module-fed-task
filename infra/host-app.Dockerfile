@@ -9,6 +9,7 @@ COPY packages ./packages
 COPY e2e/package.json ./e2e/package.json
 RUN pnpm install --frozen-lockfile
 RUN pnpm --filter host-app build
+RUN rm -f apps/host-app/dist/mockServiceWorker.js
 
 FROM nginx:1.27-alpine AS runtime
 ARG APP_ENV=production

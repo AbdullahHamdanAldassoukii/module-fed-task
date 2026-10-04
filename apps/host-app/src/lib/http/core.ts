@@ -102,13 +102,15 @@ export function createHttpClient(transport: Transport, options: HttpClientOption
     const headers = mergeHeaders(
       {
         accept: 'application/json',
-        'x-request-id': requestId,
         ...(options.getLanguage ? { 'accept-language': options.getLanguage() } : {}),
         ...(request.body !== undefined ? { 'content-type': 'application/json' } : {}),
-        ...(request.idempotencyKey ? { 'idempotency-key': request.idempotencyKey } : {}),
       },
       options.defaultHeaders?.(),
       request.headers,
+      {
+        'x-request-id': requestId,
+        ...(request.idempotencyKey ? { 'idempotency-key': request.idempotencyKey } : {}),
+      },
     );
     const transportRequest = {
       url: buildUrl(options.baseUrl, request.path, request.query),

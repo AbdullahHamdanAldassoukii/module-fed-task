@@ -1,13 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
 
-// Routes go on the context: once MSW's service worker controls the page, the remote's requests
-// come from the worker, and Chromium does not pass those through page.route.
+// MSW's service worker bypasses page.route, so routes go on the context.
 const REMOTE_ORIGIN = 'http://localhost:3001/**';
 const REMOTE_MANIFEST = 'http://localhost:3001/mf-manifest.json';
 
-// A remote that does not load must give way to the fallback within 15 s.
 const FALLBACK_BUDGET = { timeout: 15_000 };
-// The slot's load timeout, and the most a hung remote may take past it to reach the fallback.
 const LOAD_TIMEOUT_MS = 15_000;
 const TIMEOUT_SLACK_MS = 2_000;
 
@@ -25,7 +22,6 @@ test('remote unreachable → fallback with Try again; recovers when the remote i
   await expect(alert).toContainText("The passport form couldn't load", FALLBACK_BUDGET);
   await expect(alert).toContainText('Please try again. Your information is kept.');
   await expect(page.getByRole('button', { name: 'Next' })).toBeDisabled();
-  // The host around the slot keeps working while the remote is down.
   await expect(page.getByRole('navigation', { name: 'Progress' })).toBeVisible();
   await page.getByRole('button', { name: 'Language' }).click();
   await page.getByRole('menuitemradio', { name: 'العربية' }).click();
@@ -71,9 +67,7 @@ test('hung remote: the fallback replaces the skeleton after the load timeout; Tr
   context,
 }) => {
   test.setTimeout(45_000);
-  // Never answering keeps the manifest request open, like a server that accepts the connection
-  // and then hangs. The Federation runtime caches that pending request, so recovery relies on
-  // Try again registering the remote again.
+  // The runtime caches a pending manifest request; only re-registering the remote recovers.
   await context.route(REMOTE_MANIFEST, () => undefined);
   await page.goto('/onboarding/passport');
 
@@ -87,7 +81,6 @@ test('hung remote: the fallback replaces the skeleton after the load timeout; Tr
   await expect(alert).toContainText("The passport form couldn't load", {
     timeout: LOAD_TIMEOUT_MS + TIMEOUT_SLACK_MS,
   });
-  // Reaching the fallback well before the timeout would mean something other than the hang failed.
   expect(Date.now() - skeletonShownAt).toBeGreaterThan(LOAD_TIMEOUT_MS - TIMEOUT_SLACK_MS);
   await expect(page.getByRole('status', { name: 'Loading passport form…' })).toHaveCount(0);
   await expect(next).toBeDisabled();
@@ -99,7 +92,7 @@ test('hung remote: the fallback replaces the skeleton after the load timeout; Tr
   await expect(alert).toHaveCount(0);
 });
 
-test('the developer panel takes a loaded remote down and Normal + Try again brings it back', async ({
+test('the developer panel takes a loaded remote down and Normal brings it back', async ({
   page,
 }) => {
   await page.goto('/onboarding/passport');
@@ -118,13 +111,12 @@ test('the developer panel takes a loaded remote down and Normal + Try again brin
   await panel.getByRole('radio', { name: 'Normal' }).check();
   await panel.getByRole('button', { name: 'Close developer panel' }).click();
   await expect(panel).toBeHidden();
-  await page.getByRole('button', { name: 'Try again' }).click();
 
   await expect(remoteHeading(page)).toBeVisible(FALLBACK_BUDGET);
   await expect(page.getByRole('alert')).toHaveCount(0);
 });
 
-test('a remote with an incompatible contract shows its own fallback; Normal + Try again recovers', async ({
+test('a remote with an incompatible contract shows its own fallback without Try again; Normal recovers', async ({
   page,
 }) => {
   await page.goto('/onboarding/passport');
@@ -140,13 +132,13 @@ test('a remote with an incompatible contract shows its own fallback; Normal + Tr
     'The passport form is not compatible with this version of the app.',
   );
   await expect(alert).not.toContainText('Please try again.');
+  await expect(alert.getByRole('button', { name: 'Try again' })).toHaveCount(0);
   await expect(remoteHeading(page)).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Next' })).toBeDisabled();
 
   await panel.getByRole('radio', { name: 'Normal' }).check();
   await panel.getByRole('button', { name: 'Close developer panel' }).click();
   await expect(panel).toBeHidden();
-  await page.getByRole('button', { name: 'Try again' }).click();
 
   await expect(remoteHeading(page)).toBeVisible(FALLBACK_BUDGET);
   await expect(alert).toHaveCount(0);

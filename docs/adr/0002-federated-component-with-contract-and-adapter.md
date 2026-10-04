@@ -6,7 +6,7 @@ The host must use a remote passport form without letting Federation details or u
 
 ## Decision
 
-I chose a federated React component typed by `@repo/passport-contract`. The host uses `PassportFormSlot` as an anti-corruption adapter. It owns lazy loading, timeout handling, major-version checks, runtime state parsing, fallback UI, and retry. The remote exposes a default component and `contractVersion`. I set the host Federation `shareStrategy` to `loaded-first`, so it can render before the remote manifest is requested by the slot.
+I chose a federated React component typed by `@repo/passport-contract`. The host uses `PassportFormSlot` as an anti-corruption adapter. It owns lazy loading, timeout handling, major-version checks, runtime state parsing, fallback UI, and retry. Retry is offered for load failures and render crashes, not for an incompatible contract, which would fail the same way again. The remote exposes a default component and `contractVersion`. I set the host Federation `shareStrategy` to `loaded-first`, so it can render before the remote manifest is requested by the slot.
 
 ## Alternatives considered
 

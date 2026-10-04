@@ -73,7 +73,7 @@
     "title": "Developer panel",
     "apiScenario": "API scenario",
     "remoteScenario": "Remote scenario",
-    "remoteHint": "Changing a remote scenario reloads the form. If it fails, choose Normal and Try again.",
+    "remoteHint": "Changing a remote scenario reloads the form.",
     "reset": "Reset",
     "scenarios": {
       "success": "Success",
@@ -99,7 +99,7 @@
     "description": "Enter your ID number as it appears on your Emirates ID card.",
     "idNumber": {
       "label": "ID Number",
-      "hint": "15 digits starting with 784, e.g. 784-1234-5678901-2",
+      "hint": "15 digits starting with 784, e.g. {{example}}",
       "required": "Enter your ID number",
       "format": "Enter a 15-digit Emirates ID that starts with 784"
     },

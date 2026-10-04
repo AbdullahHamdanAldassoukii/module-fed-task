@@ -37,7 +37,7 @@ describe('DevPanel', () => {
     expect(getExtraRequestHeaders()).toEqual({});
   });
 
-  it('selects a remote scenario and explains how recovery works', async () => {
+  it('selects a remote scenario and explains that it reloads the form', async () => {
     const user = userEvent.setup();
     renderWithProviders(
       <>
@@ -50,11 +50,7 @@ describe('DevPanel', () => {
     await user.click(await screen.findByRole('radio', { name: 'Contract mismatch' }));
 
     expect(devScenarios.getRemoteScenario()).toBe('mismatch');
-    expect(
-      screen.getByText(
-        'Changing a remote scenario reloads the form. If it fails, choose Normal and Try again.',
-      ),
-    ).toBeInTheDocument();
+    expect(screen.getByText('Changing a remote scenario reloads the form.')).toBeInTheDocument();
   });
 
   it('closes on Escape and restores focus to the environment badge', async () => {

@@ -10,14 +10,6 @@ export interface SubmissionFailure {
   payload: ApplicationPayload;
 }
 
-/**
- * What the user sees when a submission does not go through. They stay on Step 2 and keep
- * every answer:
- * - network, timeout or 5xx: Try again (same idempotency key) and the payload;
- * - offline: the request waits for the network, Cancel drops it;
- * - 422: the ID form shows the field errors; a rejected passport field links to Step 1;
- * - unexpected response or unknown: a general message with the request ID.
- */
 export function SubmissionErrorAlert({
   failure,
   waitingForNetwork,
@@ -32,9 +24,7 @@ export function SubmissionErrorAlert({
   onRetry: () => void;
   onCancel: () => void;
   passportStepHref: string;
-  /** Opens Step 1 at the first rejected passport field, when the server named one. */
   onOpenPassportStep: (field: PassportField | undefined) => void;
-  /** Focus moves here when a failure appears, so keyboard users land on its actions. */
   focusRef: Ref<HTMLDivElement>;
 }) {
   const { t } = useT();
@@ -69,7 +59,7 @@ export function SubmissionErrorAlert({
     const requestId =
       presentation.showRequestId && error.requestId ? (
         <span className="wizard-alert-line wizard-alert-detail">
-          {t(M.submission.requestId, { requestId: error.requestId })}
+          {t(M.submission.requestId, { requestId: `\u2066${error.requestId}\u2069` })}
         </span>
       ) : null;
 

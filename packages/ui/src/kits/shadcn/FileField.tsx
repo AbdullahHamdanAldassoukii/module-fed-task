@@ -45,7 +45,6 @@ export function FileField(props: FileFieldProps) {
       >
         <input
           {...field.inputProps({
-            // sr-only keeps the input out of the layout; react-dropzone's own style is a 0×0 block.
             className: 'sr-only',
             style: undefined,
           })}
@@ -56,39 +55,41 @@ export function FileField(props: FileFieldProps) {
           </span>
         ) : null}
         {file ? (
-          <div className="flex w-full items-center gap-3 text-start">
+          <div className="flex w-full flex-wrap items-center gap-3 text-start">
             <FileThumbnail file={file} />
-            <div className="min-w-0 flex-1">
-              <p dir="auto" className="truncate text-sm font-medium">
-                {file.name}
+            <div className="min-w-0 flex-1 basis-40">
+              <p className="truncate text-sm font-medium">
+                <bdi>{file.name}</bdi>
               </p>
               <p className="text-xs text-muted-foreground">
                 {file.mimeType}
                 {file.sizeBytes === undefined ? '' : ` · ${formatBytes(file.sizeBytes)}`}
               </p>
             </div>
-            <Button
-              ref={replaceRef}
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={field.pickFile}
-              disabled={field.isDisabled}
-              {...field.buttonAria}
-            >
-              {labels.replace}
-            </Button>
-            {onRemove ? (
+            <div className="ms-auto flex shrink-0 gap-2">
               <Button
+                ref={replaceRef}
                 type="button"
-                variant="ghost"
+                variant="outline"
                 size="sm"
-                onClick={field.removeFile}
+                onClick={field.pickFile}
                 disabled={field.isDisabled}
+                {...field.buttonAria}
               >
-                {labels.remove}
+                {labels.replace}
               </Button>
-            ) : null}
+              {onRemove ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={field.removeFile}
+                  disabled={field.isDisabled}
+                >
+                  {labels.remove}
+                </Button>
+              ) : null}
+            </div>
           </div>
         ) : (
           <>

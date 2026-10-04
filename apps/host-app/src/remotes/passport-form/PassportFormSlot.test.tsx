@@ -309,7 +309,7 @@ describe('PassportFormSlot', () => {
     );
   });
 
-  it('reloads a loaded form for Down and recovers after Normal and Try again', async () => {
+  it('reloads a loaded form for Down and recovers as soon as Normal is chosen', async () => {
     const consoleError = silenceExpectedConsoleError();
     const user = userEvent.setup();
     renderSlot(
@@ -327,8 +327,8 @@ describe('PassportFormSlot', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent("The passport form couldn't load");
 
     await user.click(screen.getByRole('radio', { name: 'Normal' }));
-    await user.click(screen.getByRole('button', { name: 'Try again' }));
     expect(await screen.findByTestId('fake-remote')).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     expect(consoleError.mock.calls.flat()).toContainEqual(
       expect.objectContaining({ name: 'RemoteLoadError', reason: 'load-failed' }),
     );

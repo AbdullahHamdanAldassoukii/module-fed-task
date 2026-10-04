@@ -1,11 +1,8 @@
 @custom-variant dark (&:is(.dark *));
 
-/* The shadcn components style open/closed popups with these; Radix marks them with data-state. */
 @custom-variant data-open (&:where([data-state='open'], [data-open]:not([data-open='false'])));
 @custom-variant data-closed (&:where([data-state='closed'], [data-closed]:not([data-closed='false'])));
 
-/* --spacing needs no entry here: tokens.css sets it outside any layer, so it beats
-   Tailwind's default in the theme layer, and every spacing utility reads it. */
 @theme inline {
   --font-sans: var(--font-sans);
   --radius-sm: calc(var(--radius) - 4px);
@@ -35,4 +32,18 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+}
+
+@layer components {
+  @media (pointer: coarse) {
+    button[data-variant]:not([data-slot='calendar'] *),
+    [data-slot='input'],
+    [data-slot='select-trigger'] {
+      min-height: 2.75rem;
+    }
+
+    button[data-variant][data-size^='icon']:not([data-slot='calendar'] *) {
+      min-width: 2.75rem;
+    }
+  }
 }

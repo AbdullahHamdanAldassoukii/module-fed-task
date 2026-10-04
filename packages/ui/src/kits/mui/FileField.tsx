@@ -61,7 +61,6 @@ export function FileField(props: FileFieldProps) {
       >
         <input
           {...field.inputProps({
-            // Out of the layout; react-dropzone's own style is a 0×0 block that still takes a gap.
             style: visuallyHidden,
           })}
         />
@@ -74,6 +73,7 @@ export function FileField(props: FileFieldProps) {
           <Box
             sx={{
               display: 'flex',
+              flexWrap: 'wrap',
               width: '100%',
               alignItems: 'center',
               gap: 1.5,
@@ -81,35 +81,37 @@ export function FileField(props: FileFieldProps) {
             }}
           >
             <FileThumbnail file={file} />
-            <Box sx={{ minWidth: 0, flex: 1 }}>
-              <Typography variant="body2" noWrap dir="auto" sx={{ fontWeight: 500 }}>
-                {file.name}
+            <Box sx={{ minWidth: 0, flex: '1 1 10rem' }}>
+              <Typography variant="body2" noWrap sx={{ fontWeight: 500 }}>
+                <bdi>{file.name}</bdi>
               </Typography>
               <Typography variant="caption" color="text.secondary">
                 {file.mimeType}
                 {file.sizeBytes === undefined ? '' : ` · ${formatBytes(file.sizeBytes)}`}
               </Typography>
             </Box>
-            <MuiButton
-              ref={replaceRef}
-              variant="outlined"
-              size="small"
-              onClick={field.pickFile}
-              disabled={field.isDisabled}
-              {...field.buttonAria}
-            >
-              {labels.replace}
-            </MuiButton>
-            {onRemove ? (
+            <Box sx={{ display: 'flex', flexShrink: 0, gap: 1, marginInlineStart: 'auto' }}>
               <MuiButton
-                variant="text"
+                ref={replaceRef}
+                variant="outlined"
                 size="small"
-                onClick={field.removeFile}
+                onClick={field.pickFile}
                 disabled={field.isDisabled}
+                {...field.buttonAria}
               >
-                {labels.remove}
+                {labels.replace}
               </MuiButton>
-            ) : null}
+              {onRemove ? (
+                <MuiButton
+                  variant="text"
+                  size="small"
+                  onClick={field.removeFile}
+                  disabled={field.isDisabled}
+                >
+                  {labels.remove}
+                </MuiButton>
+              ) : null}
+            </Box>
           </Box>
         ) : (
           <>

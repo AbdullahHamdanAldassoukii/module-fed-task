@@ -18,7 +18,7 @@ One image can serve QA or production with different public configuration. Invali
 
 ## What I checked
 
-I checked the Module Federation 2.9.2 runtime registration behavior. Forced registration clears manifest, module, and in-flight loading entries. Rejected manifest requests are not cached, but a hanging request is, which is why retry force-registers. I also checked the nginx cache split: manifest entry points are `no-cache` and hashed assets are immutable.
+I checked the Module Federation 2.9.2 runtime registration behavior. Forced registration clears manifest, module, and in-flight loading entries. Rejected manifest requests are not cached, but a hanging request is, which is why retry force-registers. I also checked the nginx cache split: manifest entry points are `no-cache` and hashed assets are immutable, and both send `Vary: Origin` because the allowed origin is reflected per request.
 
 ## Status / Date
 

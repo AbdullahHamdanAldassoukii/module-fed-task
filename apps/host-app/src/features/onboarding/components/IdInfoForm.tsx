@@ -9,6 +9,10 @@ import {
   type IdInfoFieldErrorCode,
 } from '../model';
 
+const ID_NUMBER_EXAMPLE = '784-1234-5678901-2';
+
+const ltr = (text: string) => `\u2066${text}\u2069`;
+
 const REQUIRED_MESSAGE = {
   idNumber: M.idInfo.idNumber.required,
   nationality: M.idInfo.nationality.required,
@@ -40,8 +44,7 @@ function IdNumberField({ field, disabled }: { field: IdInfoFieldBinding; disable
     const masked = maskEmiratesId(raw, input?.selectionStart ?? raw.length);
     onChange(masked.value);
     if (input && document.activeElement === input) {
-      // Writing the masked text now leaves React nothing to change, so the caret stays where
-      // the user was typing instead of jumping to the end.
+      // React would otherwise move the caret to the end.
       input.value = masked.value;
       input.setSelectionRange(masked.caret, masked.caret);
     }
@@ -50,7 +53,7 @@ function IdNumberField({ field, disabled }: { field: IdInfoFieldBinding; disable
   return (
     <TextField
       autoComplete="off"
-      description={t(M.idInfo.idNumber.hint)}
+      description={t(M.idInfo.idNumber.hint, { example: ltr(ID_NUMBER_EXAMPLE) })}
       disabled={disabled}
       error={field.error ? t(errorMessage('idNumber', field.error)) : undefined}
       id="id-number"
